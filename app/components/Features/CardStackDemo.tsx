@@ -12,10 +12,10 @@ export function CardStackDemo() {
     >
       <div className="flex flex-col items-center sm:items-start md:justify-center justify-between md:w-[60%]">
         <div className="text-3xl lg:text-5xl font-semibold inline-flex space-x-3 items-center justify-center">
-          <h1 className="text-white">Seamless Experience</h1>
-          <TiFlowSwitch style={{ color: "red" }} />
+          <h1 className="text-white font-hnm">Seamless Experience</h1>
+          <TiFlowSwitch style={{ color: "[#dc2626]" }} />
         </div>{" "}
-        <p className="text-white dark:text-neutral-300 text-md md:text-lg lg:text-xl mt-8 max-w-xl text-justify">
+        <p className="text-white font-hnm dark:text-neutral-300 text-md md:text-lg lg:text-2xl mt-8 max-w-xl text-justify">
           We offer an intuitive and user-friendly journey, ensuring every moment
           at
           <Highlight>Hikari no Matsuri</Highlight> is smooth, memorable, and
