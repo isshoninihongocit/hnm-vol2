@@ -50,14 +50,16 @@ export default function Hero() {
 
   return (
     <section className="relative flex h-screen w-full items-center justify-center overflow-hidden">
-      <div className="absolute inset-0 flex transition-all duration-700">
+      {/* Background transition */}
+      <div className="absolute inset-0 flex transition-all duration-700 z-0">
         <div className={`w-1/2 ${bgLeft} transition-colors duration-700`} />
         <div className={`w-1/2 ${bgRight} transition-colors duration-700`} />
       </div>
-      {/* Animated Wavy Text */}
-      <div className="absolute inset-0 flex justify-center items-center pointer-events-none">
+
+      {/* Text on top */}
+      <div className="absolute inset-0 flex justify-center items-center pointer-events-none z-20">
         <motion.h1
-          className="flex text-[8vw]  uppercase leading-none tracking-tight text-white mix-blend-difference font-hnm"
+          className="flex text-[8vw] uppercase leading-none tracking-tight text-white mix-blend-difference font-hnm"
           initial="hidden"
           animate="visible"
           variants={{
@@ -89,15 +91,17 @@ export default function Hero() {
           ))}
         </motion.h1>
       </div>
-      {/* Rest as before */}
-      <div className="relative z-10">
+
+      {/* Character Image behind the text */}
+      <div className="absolute z-10">
         <img
           src={character}
           alt="Main Hero Character"
           className={`h-auto object-contain ${imageWidth}`}
         />
       </div>
-      <div className="absolute bottom-10 right-10 flex flex-col items-center text-white">
+
+      <div className="absolute bottom-10 right-10 flex flex-col items-center text-white z-20">
         <span className="mb-2 text-xs tracking-widest uppercase">
           Explore Site
         </span>
@@ -108,16 +112,133 @@ export default function Hero() {
           strokeWidth={2}
           viewBox="0 0 24 24"
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M19 9l-7 7-7-7"
-          />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
         </svg>
       </div>
     </section>
   );
 }
+
+// "use client";
+// import React, { useEffect, useState } from "react";
+// import { motion } from "framer-motion";
+
+// interface HeroSlide {
+//   character: string;
+//   bgLeft: string;
+//   bgRight: string;
+//   imageWidth: string;
+// }
+
+// const slides: HeroSlide[] = [
+//   {
+//     character: "/person2.png",
+//     bgLeft: "bg-red-600",
+//     bgRight: "bg-black",
+//     imageWidth: "w-[300px]",
+//   },
+//   {
+//     character: "/person.png",
+//     bgLeft: "bg-black",
+//     bgRight: "bg-red-600",
+//     imageWidth: "w-[550px]",
+//   },
+//   {
+//     character: "/person3.png",
+//     bgLeft: "bg-red-600",
+//     bgRight: "bg-black",
+//     imageWidth: "w-[600px]",
+//   },
+//   {
+//     character: "/char.png",
+//     bgLeft: "bg-black",
+//     bgRight: "bg-red-600",
+//     imageWidth: "w-[800px]",
+//   },
+// ];
+
+// export default function Hero() {
+//   const [index, setIndex] = useState(0);
+
+//   useEffect(() => {
+//     const timer = setTimeout(() => {
+//       setIndex((prev) => (prev + 1) % slides.length);
+//     }, 3000);
+//     return () => clearTimeout(timer);
+//   }, [index]);
+
+//   const { character, bgLeft, bgRight, imageWidth } = slides[index];
+
+//   return (
+//     <section className="relative flex h-screen w-full items-center justify-center overflow-hidden">
+//       <div className="absolute inset-0 flex transition-all duration-700">
+//         <div className={`w-1/2 ${bgLeft} transition-colors duration-700`} />
+//         <div className={`w-1/2 ${bgRight} transition-colors duration-700`} />
+//       </div>
+//       {/* Animated Wavy Text */}
+//       <div className="absolute inset-0 flex justify-center items-center pointer-events-none">
+//         <motion.h1
+//           className="flex text-[8vw]  uppercase leading-none tracking-tight text-white mix-blend-difference font-hnm"
+//           initial="hidden"
+//           animate="visible"
+//           variants={{
+//             visible: { transition: { staggerChildren: 0.08 } },
+//           }}
+//         >
+//           {"HIKARI No MATSURI".split("").map((char, i) => (
+//             <motion.span
+//               key={i}
+//               className="inline-block"
+//               variants={{
+//                 hidden: { y: 0 },
+//                 visible: {
+//                   y: [0, -30, 0],
+//                   transition: {
+//                     repeat: Infinity,
+//                     repeatType: "loop",
+//                     duration: 1.6,
+//                     delay: i * 0.07,
+//                   },
+//                 },
+//               }}
+//               style={{
+//                 marginRight: char === " " ? "1vw" : 0,
+//               }}
+//             >
+//               {char}
+//             </motion.span>
+//           ))}
+//         </motion.h1>
+//       </div>
+//       {/* Rest as before */}
+//       <div className="relative z-10">
+//         <img
+//           src={character}
+//           alt="Main Hero Character"
+//           className={`h-auto object-contain ${imageWidth}`}
+//         />
+//       </div>
+//       <div className="absolute bottom-10 right-10 flex flex-col items-center text-white">
+//         <span className="mb-2 text-xs tracking-widest uppercase">
+//           Explore Site
+//         </span>
+//         <svg
+//           className="w-6 h-6 animate-bounce"
+//           fill="none"
+//           stroke="currentColor"
+//           strokeWidth={2}
+//           viewBox="0 0 24 24"
+//         >
+//           <path
+//             strokeLinecap="round"
+//             strokeLinejoin="round"
+//             d="M19 9l-7 7-7-7"
+//           />
+//         </svg>
+//       </div>
+//     </section>
+//   );
+// }
 
 // "use client";
 // import { useEffect, useState } from "react";
