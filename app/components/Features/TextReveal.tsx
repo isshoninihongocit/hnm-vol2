@@ -11,7 +11,7 @@ export function TextRevealCardPreview() {
     <div className="flex items-center justify-center bg-[#0E0E10] h-[40rem] rounded-2xl w-full">
       <TextRevealCard
         text="Hikari no Matsuri"
-        revealText="光で繋がる、心の祭り – A Festival of Light and Heart"
+        revealText="光で繋がる、心の祭り"
       >
         <TextRevealCardTitle>
           Step into a world where tradition meets tomorrow.

@@ -18,7 +18,7 @@ export default function About() {
       title: "2022 - Our Beginning",
       content: (
         <div>
-          <p className="mb-4 text-sm text-neutral-800 dark:text-neutral-200">
+          <p className="mb-4 text-sm text-white dark:text-white">
             _Isshoni Nihongo_ was born with a vision to connect students who
             love Japanese language & culture. Our Instagram handle{" "}
             <a
@@ -43,7 +43,7 @@ export default function About() {
       title: "2023 - Cultural Events",
       content: (
         <div>
-          <p className="mb-4 text-sm text-neutral-800 dark:text-neutral-200">
+          <p className="mb-4 text-sm text-white">
             We organized our first Japanese Festival event with language
             workshops, anime quizzes, and traditional games. The community kept
             growing with new members joining every month!
@@ -60,7 +60,7 @@ export default function About() {
       title: "2024 - Event ",
       content: (
         <div>
-          <p className="mb-4 text-sm text-neutral-800 dark:text-neutral-200">
+          <p className="mb-4 text-sm text-white">
             Today, Isshoni Nihongo is more than just an Instagram page — it’s a
             close-knit family learning together through meetups, online lessons,
             and big cultural festivals like <strong>Hikari no Matsuri</strong>.
@@ -77,7 +77,7 @@ export default function About() {
       title: "2025 - Expanding Horizons",
       content: (
         <div>
-          <p className="mb-4 text-sm text-neutral-800 dark:text-neutral-200">
+          <p className="mb-4 text-sm text-white">
             Today, Isshoni Nihongo is more than just an Instagram page — it’s a
             close-knit family learning together through meetups, online lessons,
             and big cultural festivals like <strong>Hikari no Matsuri</strong>.
@@ -93,12 +93,12 @@ export default function About() {
   ];
 
   return (
-    <section className="relative min-h-screen px-6 py-12 font-sans dark:bg-black dark:text-white">
+    <section className="relative min-h-screen px-6 py-12 font-hnm dark:bg-[#dc2626] dark:text-white">
       <div className="mx-auto max-w-4xl">
-        <h1 className="mb-4 text-4xl font-bold uppercase tracking-wider">
+        <h1 className="mb-4 text-4xl font-bold uppercase tracking-wider text-[#dc2626]">
           About Us
         </h1>
-        <p className="mb-8 text-lg max-w-2xl">
+        <p className="mb-8 text-2xl max-w-2xl text-white">
           _Isshoni Nihongo_ is your friendly Japanese language club. We share
           daily learning tips, organize cultural events, and build a community
           where everyone learns together — one word at a time. Follow us on{" "}

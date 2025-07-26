@@ -19,7 +19,7 @@ export function EvervaultCardDemo() {
           </h1>
           <FaLock className="text-red-600" size={40} />
         </div>
-        <p className="text-white dark:text-neutral-100 text-md md:text-lg lg:text-xl mt-8 max-w-xl text-justify">
+        <p className="text-white dark:text-neutral-100 text-md md:text-lg lg:text-xl mt-8 max-w-xl text-justify font-hnm">
           At <span className="font-bold">光の祭り (Hikari no Matsuri)</span>,
           your trust is our greatest honor. We protect every participant’s
           personal information with the utmost care, following strict security
@@ -36,7 +36,7 @@ export function EvervaultCardDemo() {
         </p>
         <a
           href="/privacy"
-          className="mt-4 text-sm border border-red-700 dark:border-red-600 rounded-full px-3 py-1 text-red-700 dark:text-red-500 hover:bg-red-700 hover:text-white dark:hover:bg-red-600 dark:hover:text-white transition"
+          className="mt-4 font-hnm text-l border border-red-700 dark:border-red-600 rounded-full px-3 py-1 text-red-700 dark:text-red-500 hover:bg-red-700 hover:text-white dark:hover:bg-red-600 dark:hover:text-white transition"
         >
           詳しく読む (Read More)
         </a>
@@ -49,12 +49,12 @@ export function EvervaultCardDemo() {
         <Icon className="absolute h-6 w-6 -top-3 -right-3 text-red-700 dark:text-red-700" />
         <Icon className="absolute h-6 w-6 -bottom-3 -right-3 text-red-700 dark:text-red-700" />
         <EvervaultCard text="Identity" />
-        <h2 className="dark:text-white text-white mt-4 text-sm font-light">
+        <h2 className="dark:text-white text-l text-white mt-4 text-sm font-hnm">
           Your entire identity is protected and encrypted (Hover)
         </h2>
         <a
           href="/privacy"
-          className="text-sm border font-light border-red-800/[0.8] dark:border-red-800/[0.7] rounded-full mt-4 text-white dark:text-white px-2 py-0.5"
+          className="text-l border font-hnm border-red-800/[0.8] dark:border-red-800/[0.7] rounded-full mt-4 text-white dark:text-white px-2 py-0.5"
         >
           Read More
         </a>

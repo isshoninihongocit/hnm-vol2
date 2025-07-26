@@ -1,4 +1,3 @@
-
 "use client";
 
 import React from "react";
@@ -173,8 +172,8 @@ export function HighlightsCarousel() {
   ));
 
   return (
-    <section className="w-full h-full py-20 bg-neutral-50 dark:bg-neutral-900">
-      <h2 className="max-w-7xl pl-4 mx-auto text-xl md:text-5xl font-bold text-neutral-800 dark:text-neutral-200 font-hnm">
+    <section className="w-full h-full py-20 bg-black">
+      <h2 className="max-w-7xl pl-4 mx-auto text-xl md:text-5xl font-bold text-[#dc2626] font-hnm">
         Festival Highlights
       </h2>
       <Carousel items={cards} />

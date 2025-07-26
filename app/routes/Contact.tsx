@@ -9,14 +9,18 @@ export const meta: MetaFunction = () => {
 export default function Contact() {
   return (
     <div className="bg-black text-white font-mono flex flex-col ">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-8 border-b border-neutral-800">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-8 border-b border-[#dc2626]">
         {/* Contact Info */}
         <div>
-          <p className="text-lg font-semibold">// CONTACT US AT</p>
+          <p className="text-3xl font-bold font-hnm text-[#dc2626]">
+            // CONTACT US AT
+          </p>
           <p className="text-gray-400 mt-4">japaneseclub@citchennai.net</p>
         </div>
         <div>
-          <p className="text-lg font-semibold">// OUR SOCIALS</p>
+          <p className="text-3xl font-semibold font-hnm text-[#dc2626]">
+            // OUR SOCIALS
+          </p>
           <div className="space-x-6 text-gray-400 mt-4">
             <a
               href="https://www.instagram.com/_isshoni_nihongo_?igsh=MmE2bWZ5eXJvOWs0"
