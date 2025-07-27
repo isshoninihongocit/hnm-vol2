@@ -492,7 +492,7 @@ const RegistrationPage = () => {
 
                 {index === 3 && (
                   <a
-                    href="https://rzp.io/rzp/hnmvol2"
+                    href="https://rzp.io/rzp/v3QAKNgu"
                     className="rounded-3xl my-4  py-2 text-white w-full mx-auto items-center flex justify-center bg-gradient-to-r from-purple-500 to-blue-300"
                   >
                     Buy Now
@@ -501,23 +501,13 @@ const RegistrationPage = () => {
 
                 {index === 4 && (
                   <a
-                    href="https://rzp.io/rzp/hnmvol2"
+                    href="https://rzp.io/rzp/5mlMph5"
                     className="rounded-3xl my-4  py-2 text-white w-full mx-auto items-center flex justify-center bg-gradient-to-r from-purple-500 to-blue-300"
                   >
                     Buy Now
                   </a>
                 )}
-
                 {index === 5 && (
-                  <a
-                    href="https://rzp.io/rzp/hnmvol2"
-                    className="rounded-3xl my-4  py-2 text-white w-full mx-auto items-center flex justify-center bg-gradient-to-r from-purple-500 to-blue-300"
-                  >
-                    Buy Now
-                  </a>
-                )}
-
-                {index === 6 && (
                   <a
                     href="https://rzp.io/rzp/hnmvol2"
                     className="rounded-3xl my-4  py-2 text-white w-full mx-auto items-center flex justify-center bg-gradient-to-r from-purple-500 to-blue-300"
