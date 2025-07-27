@@ -140,22 +140,22 @@ export default function AutoplayVideo() {
           className="grid grid-cols-2 gap-4 mt-4"
         >
           <img
-            src="/anya.jpg"
+            src="/img11.jpg"
             alt="Anime 1"
-            className="rounded-lg object-cover h-40 w-full shadow-lg"
+            className="rounded-lg object-cover h-32 w-32 shadow-lg"
           />
           <img
-            src="/gojo.jpg"
+            src="/img8.jpg"
             alt="Anime 2"
-            className="rounded-lg object-cover h-32 w-full shadow-lg"
+            className="rounded-lg object-cover h-32 w-32 shadow-lg"
           />
           <img
-            src="/gojo.jpg"
+            src="/img9.jpg"
             alt="Anime 3"
             className="rounded-lg object-cover h-32 w-full shadow-lg"
           />
           <img
-            src="/gojo.jpg"
+            src="/img10.jpg"
             alt="Anime 4"
             className="rounded-lg object-cover h-32 w-full shadow-lg"
           />
