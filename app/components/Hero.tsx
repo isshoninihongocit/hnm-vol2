@@ -14,25 +14,25 @@ const slides: HeroSlide[] = [
     character: "/person2.png",
     bgLeft: "bg-red-600",
     bgRight: "bg-black",
-    imageWidth: "w-[300px]",
+    imageWidth: "w-[200px] sm:w-[300px] max-w-[90vw]",
   },
   {
     character: "/person.png",
     bgLeft: "bg-black",
     bgRight: "bg-red-600",
-    imageWidth: "w-[550px]",
+    imageWidth: "w-[250px] sm:w-[400px] md:w-[550px] max-w-[90vw]",
   },
   {
     character: "/person3.png",
     bgLeft: "bg-red-600",
     bgRight: "bg-black",
-    imageWidth: "w-[600px]",
+    imageWidth: "w-[250px] sm:w-[400px] md:w-[600px] max-w-[90vw]",
   },
   {
     character: "/char.png",
     bgLeft: "bg-black",
     bgRight: "bg-red-600",
-    imageWidth: "w-[800px]",
+    imageWidth: "w-[300px] sm:w-[500px] md:w-[800px] max-w-[90vw]",
   },
 ];
 
@@ -56,10 +56,10 @@ export default function Hero() {
         <div className={`w-1/2 ${bgRight} transition-colors duration-700`} />
       </div>
 
-      {/* Text on top */}
-      <div className="absolute inset-0 flex justify-center items-center pointer-events-none z-20">
+      {/* Animated Heading */}
+      <div className="absolute inset-0 flex justify-center items-center pointer-events-none z-20 text-center px-4">
         <motion.h1
-          className="flex text-[8vw] uppercase leading-none tracking-tight text-white mix-blend-difference font-hnm"
+          className="flex flex-wrap justify-center text-[10vw] sm:text-[8vw] md:text-[6vw] uppercase leading-none tracking-tight text-white mix-blend-difference font-hnm"
           initial="hidden"
           animate="visible"
           variants={{
@@ -82,9 +82,7 @@ export default function Hero() {
                   },
                 },
               }}
-              style={{
-                marginRight: char === " " ? "1vw" : 0,
-              }}
+              style={{ marginRight: char === " " ? "1vw" : 0 }}
             >
               {char}
             </motion.span>
@@ -92,21 +90,22 @@ export default function Hero() {
         </motion.h1>
       </div>
 
-      {/* Character Image behind the text */}
-      <div className="absolute z-10">
+      {/* Character Image (Behind Text) */}
+      <div className="absolute z-10 flex justify-center items-center w-full">
         <img
           src={character}
           alt="Main Hero Character"
-          className={`h-auto object-contain ${imageWidth}`}
+          className={`h-auto object-contain ${imageWidth} transition-all duration-700`}
         />
       </div>
 
-      <div className="absolute bottom-10 right-10 flex flex-col items-center text-white z-20">
-        <span className="mb-2 text-xs tracking-widest uppercase">
+      {/* Explore Site CTA */}
+      <div className="absolute bottom-4 right-4 sm:bottom-10 sm:right-10 flex flex-col items-center text-white z-20">
+        <span className="mb-2 text-xs sm:text-sm tracking-widest uppercase">
           Explore Site
         </span>
         <svg
-          className="w-6 h-6 animate-bounce"
+          className="w-5 h-5 sm:w-6 sm:h-6 animate-bounce"
           fill="none"
           stroke="currentColor"
           strokeWidth={2}
@@ -118,6 +117,8 @@ export default function Hero() {
     </section>
   );
 }
+
+
 
 // "use client";
 // import React, { useEffect, useState } from "react";

@@ -128,7 +128,7 @@ export function DraggableCardDemo() {
         );
 
         setTimeLeft(
-          `⏳ ${days}days ${hours}hours ${minutes}minutes until Hikari no Matsuri`
+          `⏳ ${days} days ${hours} hours ${minutes} minutes until Hikari no Matsuri`
         );
       }
     }, 1000);
@@ -137,91 +137,45 @@ export function DraggableCardDemo() {
   }, []);
 
   const items = [
-    {
-      title: "Otaku Onstage",
-      image: "/ps1.jpg",
-      className: "absolute top-10 left-[20%] rotate-[-5deg]",
-    },
-    {
-      title: "Artist Alley",
-      image: "/ps.jpg",
-      className: "absolute top-40 left-[25%] rotate-[-7deg]",
-    },
-    {
-      title: "Cosplay",
-      image: "/ps2.jpg",
-      className: "absolute top-5 left-[40%] rotate-[8deg]",
-    },
-    {
-      title: "Digital Art Workshop",
-      image: "/ps3.jpg",
-      className: "absolute top-32 left-[55%] rotate-[10deg]",
-    },
-    {
-      title: "Akhibara No Quest",
-      image: "/ps8.jpg",
-      className: "absolute top-32 left-[60%] rotate-[-6deg]",
-    },
-    {
-      title: "O Talku Zone",
-      image: "/ps9.jpg",
-      className: "absolute top-10 left-[65%] rotate-[3deg]",
-    },
-    {
-      title: "Watch Party",
-      image: "/ps10.jpg",
-      className: "absolute top-44 left-[70%] rotate-[6deg]",
-    },
-    {
-      title: "Nihon Ninja Run",
-      image: "/ps11.jpg",
-      className: "absolute top-10 left-[75%] rotate-[-4deg]",
-    },
-    {
-      title: "Exhibits",
-      image: "/ps12.jpg",
-      className: "absolute top-36 left-[80%] rotate-[5deg]",
-    },
-    {
-      title: "Anime Weeb Shop",
-      image: "/ps13.jpg",
-      className: "absolute top-20 left-[85%] rotate-[-7deg]",
-    },
-    {
-      title: "Hanetsuki",
-      image: "/ps4.jpg",
-      className: "absolute top-20 right-[35%] rotate-[2deg]",
-    },
-    {
-      title: "Strokes of HNM",
-      image: "/ps6.jpg",
-      className: "absolute top-24 left-[45%] rotate-[-7deg]",
-    },
-    {
-      title: "Fly High",
-      image: "/ps7.jpg",
-      className: "absolute top-8 left-[30%] rotate-[4deg]",
-    },
+    { title: "Otaku Onstage", image: "/ps1.jpg" },
+    { title: "Artist Alley", image: "/ps.jpg" },
+    { title: "Cosplay", image: "/ps2.jpg" },
+    { title: "Digital Art Workshop", image: "/ps3.jpg" },
+    { title: "Akhibara No Quest", image: "/ps8.jpg" },
+    { title: "O Talku Zone", image: "/ps9.jpg" },
+    { title: "Watch Party", image: "/ps10.jpg" },
+    { title: "Nihon Ninja Run", image: "/ps11.jpg" },
+    { title: "Exhibits", image: "/ps12.jpg" },
+    { title: "Anime Weeb Shop", image: "/ps13.jpg" },
+    { title: "Hanetsuki", image: "/ps4.jpg" },
+    { title: "Strokes of HNM", image: "/ps6.jpg" },
+    { title: "Fly High", image: "/ps7.jpg" },
   ];
 
   return (
-    <DraggableCardContainer className="relative flex min-h-screen w-full items-center justify-center overflow-clip">
-      <p className="absolute top-1/2 z-10 mx-auto max-w-md -translate-y-3/4 text-center text-xl font-black text-[#dc2626] md:text-3xl font-hnm">
-        {timeLeft}
-      </p>
+    <section className="relative w-full py-20 bg-[#0e0e10] overflow-hidden">
+      <div className="z-10 relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 className="text-[#dc2626] text-xl sm:text-2xl md:text-3xl font-bold font-hnm">
+          {timeLeft}
+        </h2>
+      </div>
 
-      {items.map((item, index) => (
-        <DraggableCardBody key={index} className={item.className}>
-          <img
-            src={item.image}
-            alt={item.title}
-            className="pointer-events-none relative z-10 h-80 w-80 object-cover rounded-lg"
-          />
-          <h3 className="mt-4 text-center text-2xl font-bold text-[#dc2626]">
-            {item.title}
-          </h3>
-        </DraggableCardBody>
-      ))}
-    </DraggableCardContainer>
+      <DraggableCardContainer className="relative flex flex-wrap justify-center items-center gap-6 mt-12 px-4 sm:px-8">
+        {items.map((item, index) => (
+          <DraggableCardBody key={index} className="relative w-72 h-auto">
+            <img
+              src={item.image}
+              alt={item.title}
+              className="pointer-events-none h-72 w-full object-cover rounded-xl shadow-md"
+            />
+            <h3 className="mt-4 text-center text-xl font-bold text-[#dc2626] font-hnm">
+              {item.title}
+            </h3>
+          </DraggableCardBody>
+        ))}
+      </DraggableCardContainer>
+    </section>
   );
 }
+
+export default DraggableCardDemo;
