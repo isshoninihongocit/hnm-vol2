@@ -271,11 +271,10 @@
 import React from "react";
 import { json } from "@remix-run/node";
 import { useLoaderData } from "@remix-run/react";
-import CartDashboard from "~/components/CartDashboard";
 
 export const loader = () => {
   return json({
-    RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID,
+    RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID || "rzp_test_placeholder", // fallback
   });
 };
 
@@ -318,6 +317,7 @@ const plans = [
     },
   },
 ];
+
 const workshops = [
   { name: "Japanese Calligraphy Workshop", price: 300 },
   { name: "Origami Advanced Session", price: 300 },
@@ -326,10 +326,13 @@ const workshops = [
   { name: "Manga Drawing Basics", price: 300 },
   { name: "Kendo Masterclass", price: 300 },
 ];
+
 export default function RegistrationPage() {
   const { RAZORPAY_KEY_ID } = useLoaderData<typeof loader>();
+
   const handlePayment = async (amount: number, description: string) => {
     await loadRazorpayScript();
+
     const options = {
       key: RAZORPAY_KEY_ID,
       amount: amount * 100,
@@ -342,8 +345,8 @@ export default function RegistrationPage() {
         );
       },
       prefill: {
-        name: "Aksshay",
-        email: "aksshay@example.com",
+        name: "Guest",
+        email: "guest@example.com",
       },
       theme: { color: "#F37254" },
     };
@@ -353,41 +356,47 @@ export default function RegistrationPage() {
   };
 
   return (
-    <div className="bg-black text-white min-h-screen py-16 px-8">
-      <h1 className="text-4xl md:text-6xl font-extrabold mb-12 text-center">
+    <div className="bg-black text-white min-h-screen py-16 px-4 sm:px-8">
+      <h1 className="text-3xl sm:text-5xl font-extrabold mb-12 text-center font-hnm">
         REGISTRATION
       </h1>
-      <div className="grid grid-cols-3 gap-4 text-center text-lg uppercase font-bold">
-        <div className="bg-red-700 py-4">PLAN</div>
-        <div className="bg-red-700 py-4">DAY 1</div>
-        <div className="bg-red-700 py-4">DAY 2</div>
+
+      {/* PLAN SECTION */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center text-sm sm:text-lg font-bold">
+        <div className="bg-red-700 py-3 sm:py-4 uppercase">Plan</div>
+        <div className="bg-red-700 py-3 sm:py-4 uppercase">Day 1</div>
+        <div className="bg-red-700 py-3 sm:py-4 uppercase">Day 2</div>
+
         {plans.map((plan) => (
           <React.Fragment key={plan.name}>
-            <div className="bg-gradient-to-b from-purple-800 to-blue-800 flex flex-col items-center justify-center py-12 text-2xl">
+            <div className="bg-gradient-to-b from-purple-800 to-blue-800 flex flex-col items-center justify-center p-4 text-xl sm:text-2xl">
               <span>{plan.name}</span>
               <button
                 onClick={() => handlePayment(plan.price, `${plan.name} Pass`)}
-                className="mt-4 bg-red-600 px-4 py-2 rounded-full text-sm uppercase hover:bg-red-700 transition"
+                className="mt-3 bg-red-600 px-4 py-2 rounded-full text-sm uppercase hover:bg-red-700 transition"
               >
                 Pay ₹{plan.price}
               </button>
             </div>
 
-            <div className="bg-neutral-900 p-4 flex flex-col gap-4">
+            {/* Day 1 Events */}
+            <div className="bg-neutral-900 p-4 flex flex-col gap-3 text-base">
               {plan.days.Day1.map((event) => (
                 <div
                   key={event}
-                  className="border border-yellow-500 py-4 px-2 rounded text-base hover:bg-yellow-600 hover:text-black transition"
+                  className="border border-yellow-500 py-2 px-3 rounded hover:bg-yellow-600 hover:text-black transition"
                 >
                   {event}
                 </div>
               ))}
             </div>
-            <div className="bg-neutral-900 p-4 flex flex-col gap-4">
+
+            {/* Day 2 Events */}
+            <div className="bg-neutral-900 p-4 flex flex-col gap-3 text-base">
               {plan.days.Day2.map((event) => (
                 <div
                   key={event}
-                  className="border border-yellow-500 py-4 px-2 rounded text-base hover:bg-yellow-600 hover:text-black transition"
+                  className="border border-yellow-500 py-2 px-3 rounded hover:bg-yellow-600 hover:text-black transition"
                 >
                   {event}
                 </div>
@@ -396,15 +405,17 @@ export default function RegistrationPage() {
           </React.Fragment>
         ))}
       </div>
+
+      {/* WORKSHOPS SECTION */}
       <div className="mt-20">
-        <h2 className="text-3xl md:text-5xl font-extrabold mb-8 text-center">
+        <h2 className="text-2xl sm:text-4xl font-extrabold mb-10 text-center font-hnm">
           WORKSHOPS
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {workshops.map((ws) => (
             <div
               key={ws.name}
-              className="border border-green-500 text-center py-6 px-4 rounded-xl text-lg font-semibold hover:bg-green-500 hover:text-black transition flex flex-col items-center"
+              className="border border-green-500 text-center py-6 px-4 rounded-xl text-base sm:text-lg font-semibold hover:bg-green-500 hover:text-black transition flex flex-col items-center"
             >
               <span>{ws.name}</span>
               <button
