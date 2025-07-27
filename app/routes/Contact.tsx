@@ -14,7 +14,7 @@ export default function Contact() {
       <div className="border-t border-[#dc2626]" />
 
       {/* Contact Section */}
-      <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 px-6 py-10 md:px-20 md:py-16 border-b border-[#dc2626]">
+      <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 px-6 py-10 md:px-20 md:py-10 border-b border-[#dc2626]">
         {/* Location */}
         <div className="space-y-4">
           <h2 className="text-2xl font-bold text-[#dc2626] font-hnm">
@@ -34,29 +34,46 @@ export default function Contact() {
         </div>
 
         {/* Contact Info */}
-        <div className="space-y-4">
+        <div className="space-y-6">
           <h2 className="text-2xl font-bold text-[#dc2626] font-hnm">
             Contact Us
           </h2>
-          <a
-            href="mailto:japaneseclub@citchennai.net"
-            className="text-sm text-white underline break-words"
-          >
-            japaneseclub@citchennai.net
-          </a>
+          <div>
+            <a
+              href="mailto:japaneseclub@citchennai.net"
+              className="text-sm text-white break-words hover:text-red-500"
+            >
+              japaneseclub@citchennai.net
+            </a>
+          </div>
+
+          <div className="flex flex-col gap-4 text-sm text-white">
+            <p>
+              📞 Kiran:{" "}
+              <a href="tel:+918072835235" className="hover:text-red-500">
+                +91-8072835235
+              </a>
+            </p>
+            <p>
+              📞 Aksshay:{" "}
+              <a href="tel:+917200347086" className="hover:text-red-500">
+                +91-7200347086
+              </a>
+            </p>
+          </div>
         </div>
 
         {/* Socials */}
-        <div className="space-y-4">
+        <div className="space-y-6">
           <h2 className="text-2xl font-bold text-[#dc2626] font-hnm">
             Socials
           </h2>
-          <div className="flex flex-col gap-2 text-sm text-white">
+          <div className="flex flex-col gap-6 text-sm text-white">
             <a
               href="https://www.instagram.com/_isshoni_nihongo_?igsh=MmE2bWZ5eXJvOWs0"
               target="_blank"
               rel="noreferrer"
-              className="hover:underline"
+              className="hover:text-red-500"
             >
               Instagram
             </a>
@@ -64,7 +81,7 @@ export default function Contact() {
               href="https://discord.gg/hnmfestival"
               target="_blank"
               rel="noreferrer"
-              className="hover:underline"
+              className="hover:text-red-500"
             >
               Discord
             </a>
@@ -72,21 +89,21 @@ export default function Contact() {
         </div>
 
         {/* Other Links */}
-        <div className="space-y-4">
+        <div className="space-y-6">
           <h2 className="text-2xl font-bold text-[#dc2626] font-hnm">
             Other Links
           </h2>
-          <div className="flex flex-col gap-2 text-sm text-white">
-            <a href="/terms" className="hover:underline">
+          <div className="flex flex-col gap-6 text-sm text-white">
+            <a href="/terms" className="hover:text-red-500">
               Terms & Conditions
             </a>
-            <a href="/privacy" className="hover:underline">
+            <a href="/privacy" className="hover:text-red-500">
               Privacy Policy
             </a>
-            <a href="/shipping" className="hover:underline">
+            <a href="/shipping" className="hover:text-red-500">
               Shipping Policy
             </a>
-            <a href="/cancellation" className="hover:underline">
+            <a href="/cancellation" className="hover:text-red-500">
               Cancellation & Refunds
             </a>
           </div>
@@ -95,8 +112,7 @@ export default function Contact() {
 
       {/* Footer - No line after this */}
       <footer className="text-xs text-white text-center px-4 py-4">
-        <p>© 2025 Hikari no Matsuri</p>
-        <p>All Rights Reserved</p>
+        <p>© 2025 Hikari no Matsuri. All Rights Reserved</p>
       </footer>
     </div>
   );
