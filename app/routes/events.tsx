@@ -13,33 +13,38 @@ type Event = {
 const events: Event[] = [
   {
     id: 1,
-    title: "KAMICRAFT",
-    role: "Origami Workshop",
-    poster: "/1.jpg",
-    description: "Unfold the magic of Japanese paper folding. Learn cranes, blossoms & more.",
+    title: "KARAOKE NIGHT",
+    role: "Sing Your Heart Out",
+    poster: "/p8.jpg",
+    description: "Celebrate the spirit of Japanese pop culture through music! Grab the mic and sing your favorite anime openings, J-pop hits, or classics.",
     rules: [
-      "Open to all students with valid College ID.",
-      "Materials provided, handle with care.",
-      "Maintain silence & respect during instruction.",
+      "Solo or duet performances only.",
+      "Choose songs from the provided karaoke list.",
+      "Lyrics display will be available on screen.",
+      "No inappropriate language or gestures allowed.",
+      "Performance limited to 3–4 minutes per entry.",
     ],
   },
+  
   {
     id: 2,
-    title: "SHODO SPIRIT",
-    role: "Japanese Calligraphy",
-    poster: "/1.jpg",
-    description: "Experience the art of brush, ink & balance. Write beautiful kanji & proverbs.",
+    title: "ANIACT",
+    role: "Anime Reenactment (Judged)",
+    poster: "/p2.jpg",
+    description: "Step into your favorite anime scene! Act out emotional, comedic, or action-packed moments from Japanese anime.",
     rules: [
-      "Open to all students with valid College ID.",
-      "Brushes & ink provided, clean up after use.",
-      "Maintain a quiet and mindful environment.",
+      "Solo or duo performances only.",
+      "Scene must be under 3 minutes.",
+      "Judging based on expression, accuracy, and engagement.",
+      "No offensive language or content.",
     ],
   },
+  
   {
     id: 3,
     title: "OTAKU ARENA",
     role: "Anime Quiz Show",
-    poster: "/1.jpg",
+    poster: "/p1.jpg",
     description: "Team up & prove you’re the ultimate otaku with quizzes on anime & manga!",
     rules: [
       "Teams of 1-3 members.",
@@ -61,40 +66,117 @@ const events: Event[] = [
   },
   {
     id: 5,
-    title: "BRAIN DOJO",
-    role: "Shogi Board Game",
-    poster: "/1.jpg",
-    description: "Learn & play Shogi — the Japanese chess game of strategy & focus.",
+    title: "NIHON TRIVIA",
+    role: "Japanese Culture Quiz",
+    poster: "/p7.jpg",
+    description: "Explore the fascinating world of Japan — its festivals, language, food, and pop culture — through this exciting quiz!",
     rules: [
-      "Open to all students.",
-      "Respect your opponent. No distractions.",
-      "Equipment must be handled responsibly.",
+      "Solo or duo teams.",
+      "Questions will include visual, audio, and buzzer rounds.",
+      "No use of devices or external help.",
+      "Respect quizmasters and team members.",
     ],
   },
+  
   {
     id: 6,
-    title: "KOINOBORI",
-    role: "Color the Sky",
-    poster: "/1.jpg",
-    description: "Decorate carp streamers and fill the sky with your wishes & colors.",
+    title: "ONE PIECE TREASURE HUNT",
+    role: "Decode the Mystery",
+    poster: "/p3.jpg",
+    description: "Race against time to solve Japanese-themed clues and uncover hidden treasures!",
     rules: [
-      "Open to all with valid ID.",
-      "Use only provided materials.",
-      "Keep messages positive and respectful.",
+      "Teams of 2-4 members allowed.",
+      "Use only provided materials and hints.",
+      "No internet search or external help allowed.",
+      "Respect campus boundaries and fellow participants.",
+    ],
+  },
+  
+  {
+    id: 7,
+    title: "SPEECH CONTEST",
+    role: "Japanese Language Speech",
+    poster: "/p2.jpg",
+    description: "Showcase your Japanese speaking skills with a short speech on a chosen theme.",
+    rules: [
+      "Solo participation only.",
+      "Speech must be 3–5 minutes long.",
+      "Topics should relate to Japanese culture, language, or personal experience.",
+      "No reading from paper. Cue cards allowed.",
+      "Judging based on fluency, content, and delivery.",
+    ],
+  },
+
+  {
+    id: 8,
+    title: "COSPLAY CONTEST",
+    role: "Character Parade",
+    poster: "/p5.jpg",
+    description: "Bring your favorite anime, manga, or game characters to life in our exciting cosplay parade!",
+    rules: [
+      "Solo or group participation allowed (up to 4 members).",
+      "Costumes must be respectful and safe for all audiences.",
+      "Original or fan-based characters from Japanese pop culture preferred.",
+      "Skits or poses limited to 1 minute per entry.",
+      "No harmful props or offensive content permitted.",
+    ],
+  },
+
+  {
+    id: 9,
+    title: "HANETSUKI",
+    role: "Traditional Paddle Game",
+    poster: "/p6.jpg",
+    description: "Experience the elegance of Japan’s New Year tradition by playing Hanetsuki — a fun and festive game like badminton, but without a net!",
+    rules: [
+      "Solo or pairs (1v1 or 2v2) participation allowed.",
+      "Shuttle must be hit using wooden paddles (hagoita).",
+      "Points scored when opponent misses the shuttle.",
+      "No excessive force or smashing allowed — play gently.",
+      "Traditional wear encouraged, but not mandatory.",
     ],
   },
   {
-    id: 23,
-    title: "YOREI HOUSE",
-    role: "Ghost House Experience",
-    poster: "/1.jpg",
-    description: "Face your fears in a spooky walk-through inspired by Japanese ghost legends!",
+    id: 10,
+    title: "NIHON DIVE",
+    role: "Virtual Japan Booth",
+    poster: "/p4.jpg",
+    description: "Immerse yourself in the sights and sounds of Japan with VR/AR displays, interactive games, and cultural demos.",
     rules: [
-      "Groups of 2-4 allowed.",
-      "No running or pushing inside.",
-      "Not recommended for faint-hearted guests.",
+      "Open to all attendees.",
+      "Use equipment with care — VR headsets and touchscreens.",
+      "Wait your turn and follow the guide's instructions.",
+      "No food or drinks inside the booth area.",
     ],
   },
+  {
+    id: 11,
+    title: "ARTIST ALLEY",
+    role: "Fan Art & Merch Corner",
+    poster: "/p4.jpg",
+    description: "Share your passion with fan-made art, crafts, and merch inspired by anime and Japanese culture.",
+    rules: [
+      "Artists must register their booth in advance.",
+      "Only self-created art or prints allowed — no reselling.",
+      "All displayed material must be appropriate for all ages.",
+      "Setup and cleanup must be handled by the artist.",
+    ],
+  },
+  {
+    id: 12,
+    title: "ANIFLIX LOUNGE",
+    role: "Anime Watch Party",
+    poster: "/p5.jpg",
+    description: "Relax with fellow fans and enjoy a curated selection of iconic anime episodes and movies.",
+    rules: [
+      "Open lounge seating — first come, first served.",
+      "No talking or distractions during screening.",
+      "Food allowed but must be kept clean.",
+      "Respect everyone's viewing experience.",
+    ],
+  },  
+  
+  
 ];
 
 export default function EventGrid() {
@@ -125,22 +207,22 @@ function EventCard({ event }: { event: Event }) {
       </div>
       <div className="flex justify-between items-center p-4 border-t border-black space-x-2">
         <div className="flex-1 min-w-0">
-          <h2 className="font-bold text-xl truncate">{event.title}</h2>
-          <p className="text-sm">{event.role}</p>
-          <p className="text-xs mt-2">{event.description}</p>
+          <h2 className="font-bold text-xl truncate text-white">{event.title}</h2>
+          <p className="text-sm text-white">{event.role}</p>
+          <p className="text-xs mt-2 text-white">{event.description}</p>
         </div>
 
         <div className="flex gap-2 items-center">
           <button
             onClick={() => setIsOpen(true)}
             aria-label={`View rules for ${event.title}`}
-            className="flex h-10 w-10 items-center justify-center border border-black rounded-full text-xl hover:bg-gray-100"
+            className="flex h-10 w-10 items-center justify-center border bg-white border-white rounded-full text-xl hover:bg-gray-100"
           >
             +
           </button>
           <Link
             to={`/registration?eventId=${event.id}`}
-            className="flex items-center px-3 py-1 border border-black rounded-full text-sm font-semibold transition-colors hover:bg-red-600 hover:text-white"
+            className="flex items-center px-3 py-1 border bg-white rounded-full text-sm font-semibold transition-colors hover:bg-red-600"
           >
             Register
           </Link>

@@ -1,9 +1,6 @@
-import Loader from "~/components/Loader";
-// import { NavbarDemo } from "~/components/resizenav";
 import Hero from "~/components/Hero";
 import Navbar from "~/components/Navbar";
 import HeroSplitSection from "~/components/HeroSplitSection";
-// import ScrollMural from "~/components/ScrollMural";
 import { HighlightsCarousel } from "~/components/HighlightsCarousel";
 import Features from "~/components/Features/Features";
 import { DraggableCardDemo } from "~/components/DragDemo";

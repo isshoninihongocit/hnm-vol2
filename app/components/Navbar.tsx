@@ -23,6 +23,18 @@ export default function Navbar() {
             EVENTS
           </Link>
         </div>
+        <div className="flex items-center gap-1">
+          <span className="w-2 h-2 bg-red-500 inline-block rounded-sm"></span>
+          <Link to="/workshop" className="hover:text-red-500 transition">
+            WORKSHOPS
+          </Link>
+        </div>
+        <div className="flex items-center gap-1">
+          <span className="w-2 h-2 bg-red-500 inline-block rounded-sm"></span>
+          <Link to="/fun" className="hover:text-red-500 transition">
+              FUN EVENTS
+          </Link>
+        </div>
         <Link to="/registration" className="hover:text-red-500 transition">
           Register
         </Link>
