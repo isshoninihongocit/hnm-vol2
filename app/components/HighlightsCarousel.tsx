@@ -15,18 +15,20 @@ export const FestivalContent = ({
   imageUrl,
 }: FestivalContentProps) => {
   return (
-    <div className="bg-[#F5F5F7] dark:bg-neutral-800 p-8 md:p-14 rounded-3xl mb-4">
-      <h3 className="text-2xl md:text-4xl font-bold mb-4 text-neutral-800 dark:text-neutral-100 font-hnm">
+    <div className="bg-[#F5F5F7] dark:bg-neutral-800 p-4 sm:p-6 md:p-10 lg:p-14 rounded-3xl mb-6">
+      <h3 className="text-lg sm:text-2xl md:text-4xl font-bold mb-4 text-neutral-800 dark:text-neutral-100 font-hnm text-center sm:text-left">
         {title}
       </h3>
-      <p className="text-neutral-600 dark:text-neutral-400 text-base md:text-xl font-hnm max-w-3xl mx-auto mb-6">
+      <p className="text-neutral-600 dark:text-neutral-400 text-sm sm:text-base md:text-lg font-hnm max-w-3xl mx-auto sm:mx-0 mb-6 text-center sm:text-left">
         {description}
       </p>
-      <img
-        src={imageUrl}
-        alt={title}
-        className="md:w-1/2 md:h-1/2 h-full w-full mx-auto object-contain rounded-xl"
-      />
+      <div className="flex justify-center sm:justify-start">
+        <img
+          src={imageUrl}
+          alt={title}
+          className="w-full max-w-xs sm:max-w-md md:max-w-lg object-contain rounded-xl"
+        />
+      </div>
     </div>
   );
 };
@@ -172,11 +174,13 @@ export function HighlightsCarousel() {
   ));
 
   return (
-    <section className="w-full h-full py-20 bg-black">
-      <h2 className="max-w-7xl pl-4 mx-auto text-xl md:text-5xl font-bold text-[#dc2626] font-hnm">
+    <section className="w-full h-full py-12 sm:py-16 md:py-20 bg-black">
+      <h2 className="max-w-7xl px-4 sm:px-6 mx-auto text-2xl sm:text-4xl md:text-5xl font-bold text-[#dc2626] font-hnm text-center sm:text-left">
         Festival Highlights
       </h2>
-      <Carousel items={cards} />
+      <div className="px-4 sm:px-6 mt-6">
+        <Carousel items={cards} />
+      </div>
     </section>
   );
 }
