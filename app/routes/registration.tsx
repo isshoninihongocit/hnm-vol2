@@ -3,10 +3,11 @@
 import { PiCheckCircleFill } from "react-icons/pi";
 import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "@remix-run/react";
 
-// ✅ FIXED: Move environment variables to constants
-const RAZORPAY_KEY_ID = 'rzp_test_XpGqUxppRlmhUu'; // Your actual key
-const API_BASE_URL = 'http://localhost:3000';
+// Environment variables - hardcoded for client-side
+const RAZORPAY_KEY_ID = "rzp_test_XpGqUxppRlmhUu";
+const API_BASE_URL = "https://hnm2-be.vercel.app";
 
 const plans = [
   {
@@ -116,6 +117,7 @@ const plans = [
 
 const RegistrationPage = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [loadingPlanIndex, setLoadingPlanIndex] = useState<number | null>(null);
   
@@ -123,7 +125,26 @@ const RegistrationPage = () => {
   const [purchasedPlans, setPurchasedPlans] = useState<any[]>([]);
   const [purchasesLoaded, setPurchasesLoaded] = useState(false);
 
-  console.log('🚀 RegistrationPage rendered with user:', user);
+  console.log('🚀 RegistrationPage: Component mounted/rendered');
+  console.log('📍 RegistrationPage: Current location:', typeof window !== 'undefined' ? window.location.href : 'SSR');
+  console.log('� RegistrationPage: User state:', user ? { uid: user.uid, email: user.email, username: user.username } : 'null');
+  console.log('🔐 RegistrationPage: User authenticated:', !!user);
+
+  // Debug function to test login
+  // const testLogin = async () => {
+  //   console.log('🧪 Testing login with test credentials');
+  //   try {
+  //     const response = await fetch('https://hnm2-be.vercel.app/auth/login', {
+  //       method: 'POST',
+  //       headers: { 'Content-Type': 'application/json' },
+  //       body: JSON.stringify({ email: 'test@test.com', password: 'password123' })
+  //     });
+  //     const data = await response.json();
+  //     console.log('🧪 Test login response:', data);
+  //   } catch (error) {
+  //     console.error('🧪 Test login error:', error);
+  //   }
+  // };
 
   // 🔥 NEW: Streamlined function to fetch purchased plan names
   const fetchPurchasedPlans = async (userEmail: string) => {
@@ -297,6 +318,15 @@ const RegistrationPage = () => {
   const handlePayment = async (plan: any) => {
     console.log('💳 handlePayment called for plan:', plan);
 
+    // 🔥 AUTHENTICATION CHECK: Redirect to login if user is not authenticated
+    if (!user) {
+      console.log('🔐 User not authenticated, redirecting to login');
+      // Store the current path and plan info for after login
+      const currentPath = window.location.pathname + window.location.search;
+      navigate(`/login?redirect=${encodeURIComponent(currentPath)}&plan=${encodeURIComponent(plan.name)}`);
+      return;
+    }
+
     // Skip payment for contact-only plans
     if (plan.index === 2) {
       console.log('📞 Contact plan selected, showing alert');
@@ -351,7 +381,7 @@ const RegistrationPage = () => {
       // User details
       const paymentUser = {
         id: user?.uid || null,
-        name: user?.name || 'Guest User',
+        name: user?.username || user?.email?.split('@')[0] || 'Guest User',
         email: user?.email || 'guest@example.com'
       };
       console.log('👤 Payment user details:', paymentUser);
@@ -590,6 +620,21 @@ const RegistrationPage = () => {
           Simple Pricing <br /> Choose your plan
         </div>
         
+        {/* 🧪 DEBUG SECTION - Remove this in production */}
+        {/* {process.env.NODE_ENV === 'development' && (
+          <div className="mb-8 p-4 bg-yellow-900 border border-yellow-600 rounded-lg max-w-md">
+            <h3 className="text-yellow-200 font-bold mb-2">Debug Info</h3>
+            <p className="text-yellow-100 text-sm">User: {user ? `${user.email} (${user.uid})` : 'Not logged in'}</p>
+            <p className="text-yellow-100 text-sm">Auth token: {typeof window !== 'undefined' && localStorage.getItem('authToken') ? 'Present' : 'Missing'}</p>
+            <button 
+              onClick={testLogin}
+              className="mt-2 px-3 py-1 bg-yellow-600 text-black rounded text-sm"
+            >
+              Test Backend Login
+            </button>
+          </div>
+        )} */}
+        
         {/* 🔥 NEW: Loading indicator for purchase history */}
         {user?.email && !purchasesLoaded && (
           <div className="mb-6 flex items-center text-yellow-400">
@@ -713,4 +758,5 @@ const RegistrationPage = () => {
   );
 };
 
+// Export the registration page directly (no authentication guard)
 export default RegistrationPage;

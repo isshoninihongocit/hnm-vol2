@@ -111,6 +111,12 @@ export default function Navbar() {
               key={path}
               to={`/${path}`}
               className="hover:text-red-500 transition"
+              onClick={(e) => {
+                console.log(`🔗 Navbar: Clicked ${label} button, navigating to /${path}`);
+                if (path === 'registration') {
+                  console.log('🎯 Navbar: Register button clicked specifically');
+                }
+              }}
             >
               {label}
             </Link>
@@ -124,7 +130,7 @@ export default function Navbar() {
               onClick={logout}
               className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-full text-sm font-semibold"
             >
-              Logout ({user.name && user.name.trim() !== "" ? user.name : user.email})
+              Logout ({user.username && user.username.trim() !== "" ? user.username : user.email})
             </button>
           ) : (
             <button
@@ -158,7 +164,10 @@ export default function Navbar() {
               key={path}
               to={`/${path}`}
               className="hover:text-red-500 transition"
-              onClick={() => setIsOpen(false)}
+              onClick={() => {
+                console.log(`🔗 Mobile Navbar: Navigating to /${path}`);
+                setIsOpen(false);
+              }}
             >
               {label}
             </Link>
@@ -172,7 +181,7 @@ export default function Navbar() {
               }}
               className="mt-4 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-full text-sm font-semibold"
             >
-              Logout ({user.name && user.name.trim() !== "" ? user.name : user.email})
+              Logout ({user.username && user.username.trim() !== "" ? user.username : user.email})
             </button>
           ) : (
             <button

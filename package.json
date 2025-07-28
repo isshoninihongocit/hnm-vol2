@@ -17,7 +17,6 @@
     "@remix-run/serve": "^2.16.8",
     "@tabler/icons-react": "^3.34.0",
     "clsx": "^2.1.1",
-    "firebase": "^12.0.0",
     "framer-motion": "^12.23.6",
     "isbot": "^4.1.0",
     "lucide-react": "^0.525.0",
@@ -36,7 +35,6 @@
   },
   "devDependencies": {
     "@remix-run/dev": "^2.16.8",
-    "@types/firebase": "^2.4.32",
     "@types/nodemailer": "^6.4.17",
     "@types/react": "^18.2.20",
     "@types/react-dom": "^18.2.7",
