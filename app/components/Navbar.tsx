@@ -67,14 +67,16 @@
 //   );
 // }
 
+
 import { useState } from "react";
-import { Link } from "@remix-run/react";
+import { Link, useNavigate } from "@remix-run/react";
 import { useAuth } from "../context/AuthContext";
 import { Menu, X } from "lucide-react"; // Lucide icons
 
 export default function Navbar() {
-  const { user, login, logout } = useAuth();
+  const { user, logout } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
+  const navigate = useNavigate();
 
   const toggleMenu = () => setIsOpen((prev) => !prev);
 
@@ -122,11 +124,11 @@ export default function Navbar() {
               onClick={logout}
               className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-full text-sm font-semibold"
             >
-              Logout ({user.name})
+              Logout ({user.name && user.name.trim() !== "" ? user.name : user.email})
             </button>
           ) : (
             <button
-              onClick={login}
+              onClick={() => navigate("/login")}
               className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-full text-sm font-semibold"
             >
               Login
@@ -165,17 +167,17 @@ export default function Navbar() {
           {user ? (
             <button
               onClick={() => {
-                logout();
-                setIsOpen(false);
+              logout();
+              setIsOpen(false);
               }}
               className="mt-4 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-full text-sm font-semibold"
             >
-              Logout ({user.name})
+              Logout ({user.name && user.name.trim() !== "" ? user.name : user.email})
             </button>
           ) : (
             <button
               onClick={() => {
-                login();
+                navigate("/login");
                 setIsOpen(false);
               }}
               className="mt-4 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-full text-sm font-semibold"

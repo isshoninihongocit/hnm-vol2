@@ -1,316 +1,18 @@
-// Main code where the razorpay window works and everyone needs to do this one
-// "use client";
-// import React from "react";
-// import { json } from "@remix-run/node";
-// import { useLoaderData } from "@remix-run/react";
-// import CartDashboard from "~/components/CartDashboard";
-//
-// export const loader = () => {
-//   return json({
-//     RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID,
-//   });
-// };
-//
-// const plans = [
-//   {
-//     name: "General",
-//     price: 100,
-//     days: {
-//       Day1: [
-//         "Canvas Painting – Strokes of HnM",
-//         "Akihabara no Quest - A Japanese X Anime quiz",
-//         "O-Talku Zone! - Talk and Interact Area",
-//         "Hanetsuki",
-//         "Obstacle Course – Nihon Ninja Run",
-//       ],
-//       Day2: [
-//         "Canvas Painting – Strokes of HnM",
-//         "Akihabara no Quest - A Japanese X Anime quiz",
-//         "O-Talku Zone! - Talk and Interact Area",
-//         "Obstacle Course – Nihon Ninja Run",
-//         "Musical Performance – Notes of Nippon",
-//         "Artist Alley",
-//       ],
-//     },
-//   },
-//   {
-//     name: "Premium",
-//     price: 200,
-//     days: {
-//       Day1: [
-//         "Watch Party",
-//         "Japanese Language and Culture Workshop",
-//         "Origami Workshop",
-//       ],
-//       Day2: [
-//         "Otaku Onstage! A Cosplay Carnival",
-//         "Digital Art Workshop",
-//         "Kendo Workshop",
-//       ],
-//     },
-//   },
-// ];
-// const workshops = [
-//   { name: "Japanese Calligraphy Workshop", price: 300 },
-//   { name: "Origami Advanced Session", price: 300 },
-//   { name: "Ikebana - Japanese Flower Arrangement", price: 300 },
-//   { name: "Tea Ceremony Experience", price: 300 },
-//   { name: "Manga Drawing Basics", price: 300 },
-//   { name: "Kendo Masterclass", price: 300 },
-// ];
-// export default function RegistrationPage() {
-//   const { RAZORPAY_KEY_ID } = useLoaderData<typeof loader>();
-//   const handlePayment = async (amount: number, description: string) => {
-//     await loadRazorpayScript();
-//     const options = {
-//       key: RAZORPAY_KEY_ID,
-//       amount: amount * 100,
-//       currency: "INR",
-//       name: "Hikari no Matsuri",
-//       description,
-//       handler: function (response: any) {
-//         alert(
-//           `Payment successful! Payment ID: ${response.razorpay_payment_id}`
-//         );
-//       },
-//       prefill: {
-//         name: "Aksshay",
-//         email: "aksshay@example.com",
-//       },
-//       theme: { color: "#F37254" },
-//     };
-//
-//     const rzp = new (window as any).Razorpay(options);
-//     rzp.open();
-//   };
-//
-//   return (
-//     <div className="bg-black text-white min-h-screen py-16 px-8">
-//       <h1 className="text-4xl md:text-6xl font-extrabold mb-12 text-center">
-//         REGISTRATION
-//       </h1>
-//       <div className="grid grid-cols-3 gap-4 text-center text-lg uppercase font-bold">
-//         <div className="bg-red-700 py-4">PLAN</div>
-//         <div className="bg-red-700 py-4">DAY 1</div>
-//         <div className="bg-red-700 py-4">DAY 2</div>
-//         {plans.map((plan) => (
-//           <React.Fragment key={plan.name}>
-//             <div className="bg-gradient-to-b from-purple-800 to-blue-800 flex flex-col items-center justify-center py-12 text-2xl">
-//               <span>{plan.name}</span>
-//               <button
-//                 onClick={() => handlePayment(plan.price, `${plan.name} Pass`)}
-//                 className="mt-4 bg-red-600 px-4 py-2 rounded-full text-sm uppercase hover:bg-red-700 transition"
-//               >
-//                 Pay ₹{plan.price}
-//               </button>
-//             </div>
-//
-//             <div className="bg-neutral-900 p-4 flex flex-col gap-4">
-//               {plan.days.Day1.map((event) => (
-//                 <div
-//                   key={event}
-//                   className="border border-yellow-500 py-4 px-2 rounded text-base hover:bg-yellow-600 hover:text-black transition"
-//                 >
-//                   {event}
-//                 </div>
-//               ))}
-//             </div>
-//             <div className="bg-neutral-900 p-4 flex flex-col gap-4">
-//               {plan.days.Day2.map((event) => (
-//                 <div
-//                   key={event}
-//                   className="border border-yellow-500 py-4 px-2 rounded text-base hover:bg-yellow-600 hover:text-black transition"
-//                 >
-//                   {event}
-//                 </div>
-//               ))}
-//             </div>
-//           </React.Fragment>
-//         ))}
-//       </div>
-//       <div className="mt-20">
-//         <h2 className="text-3xl md:text-5xl font-extrabold mb-8 text-center">
-//           WORKSHOPS
-//         </h2>
-//         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-//           {workshops.map((ws) => (
-//             <div
-//               key={ws.name}
-//               className="border border-green-500 text-center py-6 px-4 rounded-xl text-lg font-semibold hover:bg-green-500 hover:text-black transition flex flex-col items-center"
-//             >
-//               <span>{ws.name}</span>
-//               <button
-//                 onClick={() => handlePayment(ws.price, ws.name)}
-//                 className="mt-4 bg-green-600 px-4 py-2 rounded-full text-sm uppercase hover:bg-green-700 transition"
-//               >
-//                 Pay ₹{ws.price}
-//               </button>
-//             </div>
-//           ))}
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-//
-// async function loadRazorpayScript() {
-//   if (document.getElementById("razorpay-sdk")) return;
-//   return new Promise((resolve, reject) => {
-//     const script = document.createElement("script");
-//     script.id = "razorpay-sdk";
-//     script.src = "https://checkout.razorpay.com/v1/checkout.js";
-//     script.onload = resolve;
-//     script.onerror = reject;
-//     document.body.appendChild(script);
-//   });
-// }
-// pricing acc to mac
-
-// "use client";
-//
-// import { PiCheckCircleFill } from "react-icons/pi";
-//
-// const plans = [
-//   {
-//     index: 0,
-//     name: "General Pass",
-//     price: "₹100",
-//     features: [
-//       "Canvas Painting – Strokes of HnM",
-//       "Akihabara no Quest - A Japanese X Anime quiz",
-//       "O-Talku Zone! - Talk and Interact Area",
-//       "Hanetsuki",
-//       "Obstacle Course – Nihon Ninja Run",
-//     ],
-//     description: "Access to all main festival events and activities.",
-//     buttonText: "Register Now",
-//     buttonLink: "https://rzp.io/l/general-pass",
-//   },
-//   {
-//     index: 1,
-//     name: "Premium Pass",
-//     price: "₹200",
-//     features: [
-//       "Watch Party",
-//       "Japanese Language and Culture Workshop",
-//       "Origami Workshop",
-//       "Otaku Onstage! A Cosplay Carnival",
-//       "Digital Art Workshop",
-//       "Kendo Workshop",
-//     ],
-//     description: "Includes everything from General + exclusive premium sessions.",
-//     buttonText: "Register Now",
-//     buttonLink: "https://rzp.io/l/premium-pass",
-//   },
-// ];
-//
-// const workshops = [
-//   {
-//     name: "Japanese Calligraphy Workshop",
-//     price: "₹300",
-//     link: "https://rzp.io/l/japanese-calligraphy",
-//   },
-//   {
-//     name: "Origami Advanced Session",
-//     price: "₹300",
-//     link: "https://rzp.io/l/origami-advanced",
-//   },
-//   {
-//     name: "Ikebana - Japanese Flower Arrangement",
-//     price: "₹300",
-//     link: "https://rzp.io/l/ikebana",
-//   },
-//   {
-//     name: "Tea Ceremony Experience",
-//     price: "₹300",
-//     link: "https://rzp.io/l/tea-ceremony",
-//   },
-//   {
-//     name: "Manga Drawing Basics",
-//     price: "₹300",
-//     link: "https://rzp.io/l/manga-basics",
-//   },
-//   {
-//     name: "Kendo Masterclass",
-//     price: "₹300",
-//     link: "https://rzp.io/l/kendo-masterclass",
-//   },
-// ];
-//
-// const RegistrationPage = () => {
-//   return (
-//     <div className="w-full bg-black text-white min-h-screen">
-//
-//       <div className="flex flex-col items-center justify-center px-6 py-20">
-//         <h1 className="text-4xl md:text-6xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-b from-neutral-50 to-neutral-400">
-//           Hikari no Matsuri <br /> Event Registration
-//         </h1>
-//
-//         <p className="text-center text-neutral-400 mt-4 text-lg max-w-2xl">
-//           Choose your pass and explore the best of Japanese culture, art, and
-//           experience.
-//         </p>
-//
-//         {/* PASS PLANS */}
-//         <div className="grid md:grid-cols-2 gap-10 mt-16 w-full max-w-5xl">
-//           {plans.map((plan) => (
-//             <div
-//               key={plan.name}
-//               className="border border-neutral-700 rounded-3xl p-6 hover:border-yellow-400 transition"
-//             >
-//               <div className="text-3xl font-semibold mb-2 text-yellow-300">
-//                 {plan.name}
-//               </div>
-//               <div className="text-2xl mb-4">{plan.price}</div>
-//               <p className="mb-6 text-neutral-300">{plan.description}</p>
-//               <ul className="mb-6">
-//                 {plan.features.map((feature) => (
-//                   <li key={feature} className="flex items-center py-1">
-//                     <PiCheckCircleFill className="text-green-400 mr-2" />
-//                     {feature}
-//                   </li>
-//                 ))}
-//               </ul>
-//             </div>
-//           ))}
-//         </div>
-//
-//         {/* WORKSHOPS */}
-//         <h2 className="text-4xl font-bold mt-24 mb-10 text-center text-pink-300">
-//           Add-On Workshops
-//         </h2>
-//
-//         <div className="grid md:grid-cols-3 gap-8 w-full max-w-6xl">
-//           {workshops.map((workshop) => (
-//             <div
-//               key={workshop.name}
-//               className="border border-neutral-700 rounded-xl p-6 text-center hover:border-green-400 transition"
-//             >
-//               <h3 className="text-xl font-semibold text-green-300">
-//                 {workshop.name}
-//               </h3>
-//               <p className="text-lg my-2">{workshop.price}</p>
-//             </div>
-//           ))}
-//         </div>
-//       </div>
-//     </div>
-//   );
-// };
-//
-// export default RegistrationPage;
-
 "use client";
 
-import { Link } from "react-router-dom";
-
 import { PiCheckCircleFill } from "react-icons/pi";
+import { useState, useEffect } from "react";
+import { useAuth } from "../context/AuthContext";
+
+// ✅ FIXED: Move environment variables to constants
+const RAZORPAY_KEY_ID = 'rzp_test_XpGqUxppRlmhUu'; // Your actual key
+const API_BASE_URL = 'http://localhost:3000';
 
 const plans = [
   {
     index: 0,
     name: "General",
-    price: "₹100",
+    price: 100,
     features: [
       "Canvas Painting – Strokes of HnM (Day 1 & 2)",
       "Akihabara no Quest – Japanese × Anime Quiz (Day 1 & 2)",
@@ -321,16 +23,15 @@ const plans = [
       "Artist Alley (Day 2)",
       "Digital Certificate of Participation",
     ],
-    style:
-      " rounded-3xl  py-10 bg-clip-text text-transparent bg-gradient-to-b from-neutral-300 to-neutral-50",
-    description:
-      "The General Pass gives you access to the heart of Hikari no Matsuri! Join us for two days of anime quizzes, ninja runs, art, and cultural exchange — perfect for all Japanese culture enthusiasts.",
+    style: "rounded-3xl py-10 bg-clip-text text-transparent bg-gradient-to-b from-neutral-300 to-neutral-50",
+    description: "The General Pass gives you access to the heart of Hikari no Matsuri! Join us for two days of anime quizzes, ninja runs, art, and cultural exchange — perfect for all Japanese culture enthusiasts.",
     button: "Buy Now",
+    type: "pass"
   },
   {
     index: 1,
     name: "Premium",
-    price: "₹200",
+    price: 200,
     features: [
       "All General Pass Events",
       "Exclusive Access to Yukata Experience – Dress Like a Native (Day 2)",
@@ -339,17 +40,15 @@ const plans = [
       "Custom Event Badge & Premium Merchandise",
       "Digital Certificate of Premium Participation",
     ],
-    style:
-      " rounded-3xl  py-10 bg-clip-text text-transparent bg-gradient-to-b from-neutral-300 to-neutral-50",
-    description:
-      "Unlock the full experience of Hikari no Matsuri with our Premium Pass. Immerse yourself in Japanese culture through exclusive workshops, VIP access, and special merch. For the true Nihon enthusiast!",
+    style: "rounded-3xl py-10 bg-clip-text text-transparent bg-gradient-to-b from-neutral-300 to-neutral-50",
+    description: "Unlock the full experience of Hikari no Matsuri with our Premium Pass. Immerse yourself in Japanese culture through exclusive workshops, VIP access, and special merch. For the true Nihon enthusiast!",
     button: "Buy Now",
+    type: "pass"
   },
   {
     index: 2,
     name: "Workshops & Add-Ons",
-    feature: "Best",
-    price: "₹300 per workshop",
+    price: 300,
     features: [
       "Includes General + Premium Pass Features",
       "Kendo Workshop",
@@ -360,17 +59,15 @@ const plans = [
       "Materials Provided On-Site",
       "Limited Slots Available per Workshop",
     ],
-    style:
-      " h-full rounded-3xl py-10 flex flex-col  bg-clip-text text-transparent bg-gradient-to-b from-neutral-300 to-neutral-50  ",
-    description:
-      "Enhance your Hikari no Matsuri experience by enrolling in our exclusive workshops. Gain hands-on learning and cultural immersion from professionals.",
+    style: "h-full rounded-3xl py-10 flex flex-col bg-clip-text text-transparent bg-gradient-to-b from-neutral-300 to-neutral-50",
+    description: "Enhance your Hikari no Matsuri experience by enrolling in our exclusive workshops. Gain hands-on learning and cultural immersion from professionals.",
     button: "Contact Us",
+    type: "workshop-bundle"
   },
-
   {
     index: 3,
     name: "Shodo Workshop",
-    price: "₹300",
+    price: 300,
     features: [
       "Traditional Japanese Calligraphy",
       "Ink & Brush Provided",
@@ -378,16 +75,15 @@ const plans = [
       "Take-home Art Piece",
       "Participation Certificate",
     ],
-    style:
-      " rounded-3xl  py-10 bg-clip-text text-transparent bg-gradient-to-b from-neutral-300 to-neutral-50",
-    description:
-      "Experience the art of Shodō — master the brush strokes of Japanese calligraphy in this culturally immersive workshop.",
+    style: "rounded-3xl py-10 bg-clip-text text-transparent bg-gradient-to-b from-neutral-300 to-neutral-50",
+    description: "Experience the art of Shodō — master the brush strokes of Japanese calligraphy in this culturally immersive workshop.",
     button: "Join Shodō",
+    type: "workshop"
   },
   {
     index: 4,
     name: "Kendo Workshop",
-    price: "₹300",
+    price: 300,
     features: [
       "Intro to Japanese Swordsmanship",
       "Practice with Bamboo Shinai",
@@ -395,16 +91,15 @@ const plans = [
       "Safety Gear Provided",
       "Participation Certificate",
     ],
-    style:
-      " h-full rounded-3xl py-10 flex flex-col  bg-clip-text text-transparent bg-gradient-to-b from-neutral-300 to-neutral-50  ",
-    description:
-      "Step into the spirit of the samurai and learn the fundamentals of Kendo — the way of the sword, taught by trained instructors.",
+    style: "h-full rounded-3xl py-10 flex flex-col bg-clip-text text-transparent bg-gradient-to-b from-neutral-300 to-neutral-50",
+    description: "Step into the spirit of the samurai and learn the fundamentals of Kendo — the way of the sword, taught by trained instructors.",
     button: "Join Kendo",
+    type: "workshop"
   },
   {
     index: 5,
     name: "Origami Workshop",
-    price: "₹300",
+    price: 300,
     features: [
       "Learn Traditional Origami Techniques",
       "Create Multiple Origami Figures",
@@ -412,295 +107,610 @@ const plans = [
       "Cultural Storytelling Session",
       "Participation Certificate",
     ],
-    style:
-      " h-full rounded-3xl py-10 flex flex-col  bg-clip-text text-transparent bg-gradient-to-b from-neutral-300 to-neutral-50  ",
-    description:
-      "Unfold the stories behind paper art — join this fun and relaxing origami session with cultural insights.",
+    style: "h-full rounded-3xl py-10 flex flex-col bg-clip-text text-transparent bg-gradient-to-b from-neutral-300 to-neutral-50",
+    description: "Unfold the stories behind paper art — join this fun and relaxing origami session with cultural insights.",
     button: "Join Origami",
+    type: "workshop"
   },
 ];
+
 const RegistrationPage = () => {
+  const { user } = useAuth();
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadingPlanIndex, setLoadingPlanIndex] = useState<number | null>(null);
+  
+  // 🔥 UPDATED: Simplified state for purchased plans using new streamlined endpoint
+  const [purchasedPlans, setPurchasedPlans] = useState<any[]>([]);
+  const [purchasesLoaded, setPurchasesLoaded] = useState(false);
+
+  console.log('🚀 RegistrationPage rendered with user:', user);
+
+  // 🔥 NEW: Streamlined function to fetch purchased plan names
+  const fetchPurchasedPlans = async (userEmail: string) => {
+    console.log('📊 Fetching purchased plans for email:', userEmail);
+    
+    try {
+      const response = await fetch(`${API_BASE_URL}/payments/user-purchased-plans/${encodeURIComponent(userEmail)}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      console.log('📥 Purchased plans response status:', response.status);
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch purchased plans: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log('✅ Purchased plans fetched:', result);
+      return result.purchasedPlans || [];
+
+    } catch (error) {
+      console.error('❌ Error fetching purchased plans:', error);
+      return [];
+    }
+  };
+
+  // 🔥 UPDATED: Simplified check function
+  const isPlanPurchased = (planName: string, planType: string) => {
+    if (!purchasesLoaded || !user?.email) return false;
+    
+    return purchasedPlans.some(plan => 
+      plan.planName === planName && plan.planType === planType
+    );
+  };
+
+  // 🔥 NEW: Get purchase details for a plan
+  const getPurchaseDetails = (planName: string, planType: string) => {
+    return purchasedPlans.find(plan => 
+      plan.planName === planName && plan.planType === planType
+    );
+  };
+
+  // 🔥 UPDATED: Load purchased plans when component mounts
+  useEffect(() => {
+    const loadPurchasedPlans = async () => {
+      if (user?.email && !purchasesLoaded) {
+        console.log('🔄 Loading purchased plans by email...');
+        const plans = await fetchPurchasedPlans(user.email);
+        setPurchasedPlans(plans);
+        setPurchasesLoaded(true);
+      }
+    };
+
+    loadPurchasedPlans();
+  }, [user?.email, purchasesLoaded]);
+
+  // Function to create order via your backend
+  const createOrder = async (amount: number, eventDetails: any, user: any) => {
+    console.log('📦 createOrder called with:', {
+      amount,
+      eventDetails,
+      user,
+      apiUrl: `${API_BASE_URL}/payments/create-order`
+    });
+
+    try {
+      const requestBody = {
+        amount,
+        currency: 'INR',
+        receipt: `receipt_${Date.now()}`,
+        eventDetails,
+        user
+      };
+
+      console.log('📡 Sending request to backend:', requestBody);
+
+      const response = await fetch(`${API_BASE_URL}/payments/create-order`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      console.log('📥 Backend response status:', response.status);
+      console.log('📥 Backend response ok:', response.ok);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error('❌ Backend error response:', errorText);
+        throw new Error(`Failed to create order: ${response.status} - ${errorText}`);
+      }
+
+      const orderData = await response.json();
+      console.log('✅ Order created successfully:', orderData);
+      return orderData;
+
+    } catch (error) {
+      console.error('❌ Error creating order:', error);
+      throw error;
+    }
+  };
+
+  // Load Razorpay script - FIXED VERSION
+  const loadRazorpayScript = () => {
+    console.log('📜 Loading Razorpay script...');
+    
+    return new Promise((resolve) => {
+      // ✅ FIXED: Check if Razorpay object exists, not just the script tag
+      if ((window as any).Razorpay) {
+        console.log('✅ Razorpay already loaded and available');
+        resolve(true);
+        return;
+      }
+
+      // Check if script tag exists but Razorpay isn't loaded yet
+      const existingScript = document.getElementById('razorpay-sdk');
+      if (existingScript) {
+        console.log('📜 Script tag exists, waiting for Razorpay to load...');
+        
+        // Wait for the existing script to load
+        const checkRazorpay = setInterval(() => {
+          if ((window as any).Razorpay) {
+            console.log('✅ Razorpay loaded from existing script');
+            clearInterval(checkRazorpay);
+            resolve(true);
+          }
+        }, 100);
+        
+        // Timeout after 10 seconds
+        setTimeout(() => {
+          clearInterval(checkRazorpay);
+          console.error('❌ Timeout waiting for existing Razorpay script');
+          resolve(false);
+        }, 10000);
+        
+        return;
+      }
+
+      // Create new script if it doesn't exist
+      console.log('📜 Creating new Razorpay script tag...');
+      const script = document.createElement('script');
+      script.id = 'razorpay-sdk';
+      script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+      
+      script.onload = () => {
+        console.log('✅ Razorpay script loaded successfully');
+        
+        // Double-check that Razorpay is actually available
+        if ((window as any).Razorpay) {
+          resolve(true);
+        } else {
+          console.error('❌ Script loaded but Razorpay not available');
+          resolve(false);
+        }
+      };
+      
+      script.onerror = () => {
+        console.error('❌ Failed to load Razorpay script');
+        resolve(false);
+      };
+      
+      document.body.appendChild(script);
+    });
+  };
+
+  // Handle payment process - UPDATED with streamlined duplicate check
+  const handlePayment = async (plan: any) => {
+    console.log('💳 handlePayment called for plan:', plan);
+
+    // Skip payment for contact-only plans
+    if (plan.index === 2) {
+      console.log('📞 Contact plan selected, showing alert');
+      alert("Please contact us for workshop bundles at contact@hikarinomatsuri.com");
+      return;
+    }
+
+    // 🔥 UPDATED: Check for duplicate purchases using streamlined data
+    if (user?.email && purchasesLoaded) {
+      console.log('🔍 Checking for duplicate purchases...');
+      
+      if (isPlanPurchased(plan.name, plan.type)) {
+        const purchaseDetails = getPurchaseDetails(plan.name, plan.type);
+        const purchaseDate = purchaseDetails?.purchaseDate 
+          ? new Date(purchaseDetails.purchaseDate).toLocaleDateString()
+          : 'Unknown date';
+        
+        alert(
+          `🚫 Already Purchased!
+          
+          You have already bought the "${plan.name}" ${plan.type}.
+          
+          Purchase Date: ${purchaseDate}
+          Payment ID: ${purchaseDetails?.paymentId || 'N/A'}
+          
+          You cannot purchase the same item twice.
+          
+          If you believe this is an error, please contact support.`
+        );
+        return;
+      }
+    }
+
+    // Check if purchases are still loading
+    if (user?.email && !purchasesLoaded) {
+      alert("⏳ Loading your purchase history. Please wait a moment and try again.");
+      return;
+    }
+
+    console.log('🔄 Starting payment process...');
+    setIsLoading(true);
+    setLoadingPlanIndex(plan.index);
+
+    try {
+      // Load Razorpay script
+      console.log('🔍 Checking Razorpay script...');
+      const scriptLoaded = await loadRazorpayScript();
+      if (!scriptLoaded) {
+        throw new Error('Failed to load Razorpay script');
+      }
+
+      // User details
+      const paymentUser = {
+        id: user?.uid || null,
+        name: user?.name || 'Guest User',
+        email: user?.email || 'guest@example.com'
+      };
+      console.log('👤 Payment user details:', paymentUser);
+
+      // Event details
+      const eventDetails = {
+        name: plan.name,
+        type: plan.type,
+        description: plan.description
+      };
+      console.log('🎟️ Event details:', eventDetails);
+
+      // Create order via backend
+      console.log('🔨 Creating order...');
+      const orderData = await createOrder(plan.price, eventDetails, paymentUser);
+
+      // Razorpay options
+      const options = {
+        key: RAZORPAY_KEY_ID,
+        amount: orderData.amount,
+        currency: orderData.currency,
+        name: "Hikari no Matsuri",
+        description: `Registration for ${plan.name}`,
+        order_id: orderData.id,
+        handler: function (response: any) {
+          console.log('🎉 Payment Success:', response);
+          storePaymentViaAPI(response, orderData, plan, paymentUser)
+          .then((result) => {
+            console.log('✅ Payment stored via backend:', result);
+            
+            // 🔥 UPDATED: Refresh purchased plans using streamlined endpoint
+            if (user?.email) {
+              fetchPurchasedPlans(user.email).then(plans => {
+                setPurchasedPlans(plans);
+              });
+            }
+            
+            alert(
+              `🎉 Payment successful! 
+              Payment ID: ${response.razorpay_payment_id}
+              Order ID: ${response.razorpay_order_id}
+              
+              Your registration has been confirmed and stored securely.
+              Reference ID: ${result.firestoreDocId || result.docId}
+              
+              You will receive a confirmation email shortly.`
+            );
+          })
+          .catch((apiError) => {
+            console.error('❌ Backend storage failed:', apiError);
+            
+            alert(
+              `✅ Payment successful! 
+              Payment ID: ${response.razorpay_payment_id}
+              
+              Note: There was an issue saving your registration data. 
+              Please contact support with your payment ID.`
+            );
+          });
+          verifyPayment(response);
+        },
+        prefill: {
+          name: paymentUser.name,
+          email: paymentUser.email,
+        },
+        theme: {
+          color: "#dc2626"
+        },
+        modal: {
+          ondismiss: function() {
+            console.log('❌ Payment modal closed by user');
+            setIsLoading(false);
+            setLoadingPlanIndex(null);
+          }
+        }
+      };
+
+      console.log('⚙️ Razorpay options configured:', {
+        key: options.key,
+        amount: options.amount,
+        currency: options.currency,
+        order_id: options.order_id,
+        prefill: options.prefill
+      });
+
+      console.log('🔍 Checking if Razorpay is available on window...');
+      if (!(window as any).Razorpay) {
+        throw new Error('Razorpay is not loaded on window object');
+      }
+
+      console.log('✅ Creating Razorpay instance...');
+      const razorpay = new (window as any).Razorpay(options);
+      
+      razorpay.on('payment.failed', function (response: any) {
+        console.error('❌ Payment Failed:', response.error);
+        
+        // Store failed payment data
+        const failedPaymentData = {
+          errorCode: response.error.code,
+          errorDescription: response.error.description,
+          planName: plan.name,
+          planType: plan.type,
+          planPrice: plan.price,
+          userName: paymentUser.name,
+          userEmail: paymentUser.email,
+          userId: paymentUser.id,
+          attemptedAmount: orderData?.amount || plan.price * 100
+        };
+        
+        storeFailedPaymentViaAPI(failedPaymentData);
+        
+        alert(`Payment failed: ${response.error.description}`);
+        setIsLoading(false);
+        setLoadingPlanIndex(null);
+      });
+
+      console.log('🚀 Opening Razorpay checkout...');
+      razorpay.open();
+
+    } catch (error) {
+      console.error('❌ Payment Error:', error);
+      alert('Failed to initiate payment. Please try again.');
+      setIsLoading(false);
+      setLoadingPlanIndex(null);
+    }
+  };
+
+  // Function to store successful payment via backend API
+  const storePaymentViaAPI = async (paymentData: any, orderData: any, planData: any, userData: any) => {
+    console.log('🚀 Storing payment via backend API...');
+    
+    try {
+      const response = await fetch(`${API_BASE_URL}/payments/store-payment`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          paymentData: {
+            razorpay_payment_id: paymentData.razorpay_payment_id,
+            razorpay_order_id: paymentData.razorpay_order_id,
+            razorpay_signature: paymentData.razorpay_signature
+          },
+          orderData: {
+            id: orderData.id,
+            amount: orderData.amount,
+            currency: orderData.currency,
+            receipt: orderData.receipt
+          },
+          planData: {
+            name: planData.name,
+            type: planData.type,
+            price: planData.price,
+            description: planData.description,
+            features: planData.features
+          },
+          userData: {
+            id: userData.id || null,
+            name: userData.name,
+            email: userData.email
+          }
+        }),
+      });
+
+      console.log('📥 Store payment response status:', response.status);
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Failed to store payment: ${response.status} - ${errorText}`);
+      }
+
+      const result = await response.json();
+      console.log('✅ Payment stored via API:', result);
+      return result;
+
+    } catch (error) {
+      console.error('❌ Error storing payment via API:', error);
+      throw error;
+    }
+  };
+
+  // Function to store failed payment via backend API
+  const storeFailedPaymentViaAPI = async (failedPaymentData: any) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/payments/store-failed-payment`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(failedPaymentData),
+      });
+
+      if (response.ok) {
+        console.log('📝 Failed payment logged via API');
+      }
+    } catch (error) {
+      console.error('❌ Failed to log failed payment via API:', error);
+    }
+  };
+
+  // Verify payment on your backend
+  const verifyPayment = async (paymentData: any) => {
+    console.log('🔐 Verifying payment:', paymentData);
+    
+    try {
+      const response = await fetch(`${API_BASE_URL}/payments/verify`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(paymentData),
+      });
+
+      console.log('📥 Verification response status:', response.status);
+
+      if (response.ok) {
+        const verificationResult = await response.json();
+        console.log('✅ Payment verified successfully:', verificationResult);
+      } else {
+        const errorText = await response.text();
+        console.error('❌ Payment verification failed:', errorText);
+      }
+    } catch (error) {
+      console.error('❌ Payment verification error:', error);
+    } finally {
+      // Reset loading states after verification attempt
+      setIsLoading(false);
+      setLoadingPlanIndex(null);
+    }
+  };
+
   return (
-    <div
-      className="w-full  md:items-center md:justify-center
-     bg-black/[0.96] antialiased 
-     bg-grid-white/[0.02] relative overflow-hidden"
-    >
-      <div className="flex items-center justify-center flex-col   ">
-        <div className="font-hnm text-[#dc2626] text-5xl pb-10 md:pb-20  px-6 text-center bg-clip-text  bg-gradient-to-b  bg-opacity-50">
+    <div className="w-full md:items-center md:justify-center bg-black/[0.96] antialiased bg-grid-white/[0.02] relative overflow-hidden">
+      <div className="flex items-center justify-center flex-col">
+        <div className="font-hnm text-[#dc2626] text-5xl pb-10 md:pb-20 px-6 text-center bg-clip-text bg-gradient-to-b bg-opacity-50">
           Simple Pricing <br /> Choose your plan
         </div>
-        <div className="grid md:grid-cols-3 gap-6 px-6 md:w-4/5 2xl:w-3/4 cursor-pointer pb-20  items-start ">
+        
+        {/* 🔥 NEW: Loading indicator for purchase history */}
+        {user?.email && !purchasesLoaded && (
+          <div className="mb-6 flex items-center text-yellow-400">
+            <svg className="animate-spin -ml-1 mr-3 h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Loading your purchase history...
+          </div>
+        )}
+        
+        <div className="grid md:grid-cols-3 gap-6 px-6 md:w-4/5 2xl:w-3/4 cursor-pointer pb-20 items-start">
           {plans.map((plan, index) => (
             <div
               key={plan.name}
-              className="h-full font-hnm text-[#dc2626] flex flex-col justify-between border rounded-3xl px-6  "
+              className="h-full font-hnm text-[#dc2626] flex flex-col justify-between border rounded-3xl px-6"
             >
               <div className={plan.style}>
                 <div className="text-4xl flex text-[#dc2626] items-center">
                   {plan.name}
-                  {plan.feature === "Contact Us" && (
-                    <div className="text-sm font-medium text-blue-600 bg-blue-100 px-2 py-1 rounded-full ml-4 items-center ">
-                      Contact Us
-                    </div>
+                  {/* 🔥 UPDATED: Show purchased indicator with improved styling */}
+                  {isPlanPurchased(plan.name, plan.type) && (
+                    <span className="ml-2 text-sm bg-green-500 text-white px-2 py-1 rounded-full flex items-center">
+                      <PiCheckCircleFill className="mr-1" size={12} />
+                      Purchased
+                    </span>
                   )}
                 </div>
-                <div className="text-3xl pt-6 ">{plan.price}</div>
+                <div className="text-3xl pt-6">₹{plan.price}</div>
                 <div className="py-6">{plan.description}</div>
 
                 <ul>
                   {plan.features.map((feature) => (
                     <li
                       key={feature}
-                      className="text-lg  py-2 flex space-x-2 items-center"
+                      className="text-lg py-2 flex space-x-2 items-center"
                     >
-                      {/* render checkmark only for enterprise tab*/}
-                      {plan.feature === "Contact Us" ? (
-                        <PiCheckCircleFill className="text-blue-400 mr-2 text-xl" />
-                      ) : (
-                        <PiCheckCircleFill className="text-green-600 mr-2 text-xl" />
-                      )}
-
+                      <PiCheckCircleFill className="text-green-600 mr-2 text-xl" />
                       {feature}
                     </li>
                   ))}
                 </ul>
               </div>
 
-              <div className={plan.button}>
-                {index === 0 && (
-                  <a
-                    href="https://rzp.io/rzp/jDBbfqeC"
-                    className="rounded-3xl my-4  py-2 text-white w-full mx-auto items-center flex justify-center bg-gradient-to-r from-emerald-500 to-blue-300"
-                  >
-                    Buy Now
-                  </a>
-                )}
-                {index === 1 && (
-                  <a
-                    href="https://rzp.io/rzp/hnm-vol2-premium"
-                    className="rounded-3xl my-4  py-2 text-white w-full mx-auto items-center flex justify-center bg-gradient-to-r from-emerald-500 to-blue-300"
-                  >
-                    Buy Now
-                  </a>
-                )}
-                {index === 2 && (
-                  <a className="rounded-3xl my-4  py-2 text-white w-full mx-auto items-center flex justify-center bg-gradient-to-r from-purple-500 to-blue-300">
-                    See below
-                  </a>
-                )}
-
-                {index === 3 && (
-                  <a
-                    href="https://rzp.io/rzp/v3QAKNgu"
-                    className="rounded-3xl my-4  py-2 text-white w-full mx-auto items-center flex justify-center bg-gradient-to-r from-purple-500 to-blue-300"
-                  >
-                    Buy Now
-                  </a>
-                )}
-
-                {index === 4 && (
-                  <a
-                    href="https://rzp.io/rzp/5mlMph5"
-                    className="rounded-3xl my-4  py-2 text-white w-full mx-auto items-center flex justify-center bg-gradient-to-r from-purple-500 to-blue-300"
-                  >
-                    Buy Now
-                  </a>
-                )}
-                {index === 5 && (
-                  <a
-                    href="https://rzp.io/rzp/hnmvol2"
-                    className="rounded-3xl my-4  py-2 text-white w-full mx-auto items-center flex justify-center bg-gradient-to-r from-purple-500 to-blue-300"
-                  >
-                    Buy Now
-                  </a>
-                )}
+              <div className="mb-4">
+                <button
+                  onClick={() => {
+                    console.log(`🖱️ Button clicked for plan ${index}:`, plan.name);
+                    handlePayment(plan);
+                  }}
+                  disabled={
+                  (isLoading && loadingPlanIndex === index) || 
+                  isPlanPurchased(plan.name, plan.type) ||
+                  Boolean(user?.email && !purchasesLoaded) // ✅ Fixed
+  }
+                  className={`rounded-3xl py-2 text-white w-full mx-auto flex justify-center items-center transition-all duration-200 ${
+                    isPlanPurchased(plan.name, plan.type)
+                      ? 'bg-green-500 cursor-not-allowed'
+                      : (user?.email && !purchasesLoaded)
+                      ? 'bg-yellow-500 cursor-not-allowed'
+                      : isLoading && loadingPlanIndex === index
+                      ? 'bg-gray-500 cursor-not-allowed'
+                      : index === 2
+                      ? 'bg-gradient-to-r from-purple-500 to-blue-300 hover:from-purple-600 hover:to-blue-400'
+                      : index <= 1
+                      ? 'bg-gradient-to-r from-emerald-500 to-blue-300 hover:from-emerald-600 hover:to-blue-400'
+                      : 'bg-gradient-to-r from-purple-500 to-blue-300 hover:from-purple-600 hover:to-blue-400'
+                  }`}
+                >
+                  {isPlanPurchased(plan.name, plan.type) ? (
+                    <span className="flex items-center">
+                      <PiCheckCircleFill className="mr-2" />
+                      Already Purchased
+                    </span>
+                  ) : (user?.email && !purchasesLoaded) ? (
+                    <span className="flex items-center">
+                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Loading...
+                    </span>
+                  ) : isLoading && loadingPlanIndex === index ? (
+                    <span className="flex items-center">
+                      <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      Processing...
+                    </span>
+                  ) : (
+                    plan.button
+                  )}
+                </button>
               </div>
             </div>
           ))}
         </div>
+
+        {/* 🔥 NEW: Debug info for development */}
+        {process.env.NODE_ENV === 'development' && user?.email && (
+          <div className="mt-8 p-4 bg-gray-800 rounded-lg text-white text-sm max-w-2xl">
+            <h3 className="font-bold mb-2">Debug Info:</h3>
+            <p>User Email: {user.email}</p>
+            <p>Purchases Loaded: {purchasesLoaded.toString()}</p>
+            <p>Purchased Plans Count: {purchasedPlans.length}</p>
+            {purchasedPlans.length > 0 && (
+              <div className="mt-2">
+                <p className="font-semibold">Purchased Plans:</p>
+                <ul className="list-disc list-inside">
+                  {purchasedPlans.map((plan, idx) => (
+                    <li key={idx}>{plan.planName} ({plan.planType})</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );
 };
 
 export default RegistrationPage;
-
-// Mobile response code below
-
-// "use client";
-// import React from "react";
-// import { json } from "@remix-run/node";
-// import { useLoaderData } from "@remix-run/react";
-//
-// export const loader = () => {
-//   return json({
-//     RAZORPAY_KEY_ID: process.env.RAZORPAY_KEY_ID || "rzp_test_placeholder", // fallback
-//   });
-// };
-//
-// const plans = [
-//   {
-//     name: "General",
-//     price: 100,
-//     days: {
-//       Day1: [
-//         "Canvas Painting – Strokes of HnM",
-//         "Akihabara no Quest - A Japanese X Anime quiz",
-//         "O-Talku Zone! - Talk and Interact Area",
-//         "Hanetsuki",
-//         "Obstacle Course – Nihon Ninja Run",
-//       ],
-//       Day2: [
-//         "Canvas Painting – Strokes of HnM",
-//         "Akihabara no Quest - A Japanese X Anime quiz",
-//         "O-Talku Zone! - Talk and Interact Area",
-//         "Obstacle Course – Nihon Ninja Run",
-//         "Musical Performance – Notes of Nippon",
-//         "Artist Alley",
-//       ],
-//     },
-//   },
-//   {
-//     name: "Premium",
-//     price: 200,
-//     days: {
-//       Day1: [
-//         "Watch Party",
-//         "Japanese Language and Culture Workshop",
-//         "Origami Workshop",
-//       ],
-//       Day2: [
-//         "Otaku Onstage! A Cosplay Carnival",
-//         "Digital Art Workshop",
-//         "Kendo Workshop",
-//       ],
-//     },
-//   },
-// ];
-//
-// const workshops = [
-//   { name: "Japanese Calligraphy Workshop", price: 300 },
-//   { name: "Origami Advanced Session", price: 300 },
-//   { name: "Ikebana - Japanese Flower Arrangement", price: 300 },
-//   { name: "Tea Ceremony Experience", price: 300 },
-//   { name: "Manga Drawing Basics", price: 300 },
-//   { name: "Kendo Masterclass", price: 300 },
-// ];
-//
-// export default function RegistrationPage() {
-//   const { RAZORPAY_KEY_ID } = useLoaderData<typeof loader>();
-//
-//   const handlePayment = async (amount: number, description: string) => {
-//     await loadRazorpayScript();
-//
-//     const options = {
-//       key: RAZORPAY_KEY_ID,
-//       amount: amount * 100,
-//       currency: "INR",
-//       name: "Hikari no Matsuri",
-//       description,
-//       handler: function (response: any) {
-//         alert(
-//           `Payment successful! Payment ID: ${response.razorpay_payment_id}`
-//         );
-//       },
-//       prefill: {
-//         name: "Guest",
-//         email: "guest@example.com",
-//       },
-//       theme: { color: "#F37254" },
-//     };
-//
-//     const rzp = new (window as any).Razorpay(options);
-//     rzp.open();
-//   };
-//
-//   return (
-//     <div className="bg-black text-white min-h-screen py-16 px-4 sm:px-8">
-//       <h1 className="text-3xl sm:text-5xl font-extrabold mb-12 text-center font-hnm">
-//         REGISTRATION
-//       </h1>
-//
-//       {/* PLAN SECTION */}
-//       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center text-sm sm:text-lg font-bold">
-//         <div className="bg-red-700 py-3 sm:py-4 uppercase">Plan</div>
-//         <div className="bg-red-700 py-3 sm:py-4 uppercase">Day 1</div>
-//         <div className="bg-red-700 py-3 sm:py-4 uppercase">Day 2</div>
-//
-//         {plans.map((plan) => (
-//           <React.Fragment key={plan.name}>
-//             <div className="bg-gradient-to-b from-purple-800 to-blue-800 flex flex-col items-center justify-center p-4 text-xl sm:text-2xl">
-//               <span>{plan.name}</span>
-//               <button
-//                 onClick={() => handlePayment(plan.price, `${plan.name} Pass`)}
-//                 className="mt-3 bg-red-600 px-4 py-2 rounded-full text-sm uppercase hover:bg-red-700 transition"
-//               >
-//                 Pay ₹{plan.price}
-//               </button>
-//             </div>
-//
-//             {/* Day 1 Events */}
-//             <div className="bg-neutral-900 p-4 flex flex-col gap-3 text-base">
-//               {plan.days.Day1.map((event) => (
-//                 <div
-//                   key={event}
-//                   className="border border-yellow-500 py-2 px-3 rounded hover:bg-yellow-600 hover:text-black transition"
-//                 >
-//                   {event}
-//                 </div>
-//               ))}
-//             </div>
-//
-//             {/* Day 2 Events */}
-//             <div className="bg-neutral-900 p-4 flex flex-col gap-3 text-base">
-//               {plan.days.Day2.map((event) => (
-//                 <div
-//                   key={event}
-//                   className="border border-yellow-500 py-2 px-3 rounded hover:bg-yellow-600 hover:text-black transition"
-//                 >
-//                   {event}
-//                 </div>
-//               ))}
-//             </div>
-//           </React.Fragment>
-//         ))}
-//       </div>
-//
-//       {/* WORKSHOPS SECTION */}
-//       <div className="mt-20">
-//         <h2 className="text-2xl sm:text-4xl font-extrabold mb-10 text-center font-hnm">
-//           WORKSHOPS
-//         </h2>
-//         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-//           {workshops.map((ws) => (
-//             <div
-//               key={ws.name}
-//               className="border border-green-500 text-center py-6 px-4 rounded-xl text-base sm:text-lg font-semibold hover:bg-green-500 hover:text-black transition flex flex-col items-center"
-//             >
-//               <span>{ws.name}</span>
-//               <button
-//                 onClick={() => handlePayment(ws.price, ws.name)}
-//                 className="mt-4 bg-green-600 px-4 py-2 rounded-full text-sm uppercase hover:bg-green-700 transition"
-//               >
-//                 Pay ₹{ws.price}
-//               </button>
-//             </div>
-//           ))}
-//         </div>
-//       </div>
-//     </div>
-//   );
-// }
-//
-// async function loadRazorpayScript() {
-//   if (document.getElementById("razorpay-sdk")) return;
-//   return new Promise((resolve, reject) => {
-//     const script = document.createElement("script");
-//     script.id = "razorpay-sdk";
-//     script.src = "https://checkout.razorpay.com/v1/checkout.js";
-//     script.onload = resolve;
-//     script.onerror = reject;
-//     document.body.appendChild(script);
-//   });
-// }
