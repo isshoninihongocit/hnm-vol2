@@ -14,7 +14,7 @@ export default function Contact() {
       <div className="border-t border-[#dc2626]" />
 
       {/* Contact Section */}
-      <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 px-6 py-10 md:px-20 md:py-10 border-b border-[#dc2626]">
+      <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-8 px-6 py-10 md:px-20 md:py-10 border-b border-[#dc2626]">
         {/* Location */}
         <div className="space-y-4">
           <h2 className="text-2xl font-bold text-[#dc2626] font-hnm">
@@ -108,9 +108,50 @@ export default function Contact() {
             </a>
           </div>
         </div>
+
+        {/* Payment Gateways - placed at the right */}
+        <div className="space-y-6">
+          <h2 className="text-2xl font-bold text-[#dc2626] font-hnm">
+            Payment Gateway
+          </h2>
+          <a href="https://razorpay.com/" target="_blank" rel="noreferrer">
+            <img
+              referrerPolicy="origin"
+              src="https://badges.razorpay.com/badge-dark.png"
+              alt="Razorpay | Payment Gateway | Neobank"
+              style={{ height: "50px", width: "150px" }}
+            />
+          </a>
+
+          <a
+            href="https://www.citchennai.edu.in/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <img
+              referrerPolicy="origin"
+              src="/CIT_Logo.png"
+              alt="CIT|Neobank"
+              style={{ height: "120px", width: "170px" }}
+            />
+          </a>
+
+          <a
+            href="https://www.citchennai.edu.in/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <img
+              referrerPolicy="origin"
+              src="/ingo.png"
+              alt="CIT|Neobank"
+              style={{ height: "95px", width: "190px" }}
+            />
+          </a>
+        </div>
       </section>
 
-      {/* Footer - No line after this */}
+      {/* Footer */}
       <footer className="text-xs text-white text-center px-4 py-4">
         <p>© 2025 Hikari no Matsuri. All Rights Reserved</p>
       </footer>
