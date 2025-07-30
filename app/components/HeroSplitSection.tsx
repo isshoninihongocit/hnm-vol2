@@ -1,4 +1,3 @@
-
 "use client";
 
 import { useState, useRef, useEffect } from "react";
@@ -72,33 +71,57 @@ export default function AutoplayVideo() {
           tradition to light up your soul.
         </motion.p>
 
-        {/* Anime Image Grid */}
+        {/* Grid with Descriptions */}
         <motion.div
           initial={{ scale: 0.95, opacity: 0 }}
           whileInView={{ scale: 1, opacity: 1 }}
           transition={{ delay: 0.6, duration: 0.8 }}
-          className="grid grid-cols-2 gap-4 mt-4 justify-center"
+          className="grid grid-cols-2 gap-6 mt-6"
         >
-          <img
-            src="/img11.jpg"
-            alt="Anime 1"
-            className="rounded-lg object-cover h-28 w-full sm:h-32 shadow-lg"
-          />
-          <img
-            src="/img8.jpg"
-            alt="Anime 2"
-            className="rounded-lg object-cover h-28 w-full sm:h-32 shadow-lg"
-          />
-          <img
-            src="/img9.jpg"
-            alt="Anime 3"
-            className="rounded-lg object-cover h-28 w-full sm:h-32 shadow-lg"
-          />
-          <img
-            src="/img10.jpg"
-            alt="Anime 4"
-            className="rounded-lg object-cover h-28 w-full sm:h-32 shadow-lg"
-          />
+          {/* Image 1 */}
+          <div className="flex flex-col items-center text-center">
+            <img
+              src="/s1.JPG"
+              alt="Lantern Walk"
+              className="rounded-lg object-cover h-45 w-full shadow-lg"
+            />
+            <p className="text-sm text-neutral-300 mt-2">
+              Vibrant sounds of Nippon Beats
+            </p>
+          </div>
+
+          {/* Image 2 */}
+          <div className="flex flex-col items-center text-center">
+            <img
+              src="/img4.jpg"
+              alt="Anime Projection"
+              className="rounded-lg object-cover h-45 w-45 shadow-lg"
+            />
+            <p className="text-sm text-neutral-300 mt-2">
+              Honored guest lights the ceremony
+            </p>
+          </div>
+
+          <div className="flex flex-col items-center text-center">
+            <img
+              src="/img11.jpg"
+              alt="Anime Projection"
+              className="rounded-lg object-cover h-45 w-45 shadow-lg"
+            />
+            <p className="text-sm text-neutral-300 mt-2">
+              Expert shares valuable knowledge
+            </p>
+          </div>
+          <div className="flex flex-col items-center text-center">
+            <img
+              src="/img7.jpg"
+              alt="Anime Projection"
+              className="rounded-lg object-cover h-45 w-45 shadow-lg"
+            />
+            <p className="text-sm text-neutral-300 mt-2">
+              Learn the art of Kendo and Experience the spirit of kendo
+            </p>
+          </div>
         </motion.div>
       </motion.div>
     </section>

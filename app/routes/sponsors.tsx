@@ -11,8 +11,8 @@ type Sponsor = {
 const sponsors: Sponsor[] = [
   {
     category: "Title Sponsor",
-    name: "BAKA STORE.",
-    logo: "/baka.jpg",
+    name: "random",
+    logo: "/hnmmainwhite.png",
   },
   {
     category: "Platinum Sponsor",

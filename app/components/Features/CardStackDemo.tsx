@@ -19,8 +19,9 @@ export function CardStackDemo() {
         </div>
 
         <p className="text-neutral-200 text-md sm:text-lg lg:text-xl font-hnm text-justify">
-          We offer an intuitive and user-friendly journey, ensuring every moment at{" "}
-          <Highlight>Hikari no Matsuri</Highlight> is smooth, memorable, and magical.
+          We offer an intuitive and user-friendly journey, ensuring every moment
+          at <Highlight>Hikari no Matsuri</Highlight> is smooth, memorable, and
+          magical.
         </p>
       </div>
 
@@ -54,38 +55,40 @@ export const Highlight = ({
 const CARDS = [
   {
     id: 0,
-    name: "Kenji Saito",
+    name: "placeholder name",
     designation: "Cultural Ambassador",
     content: (
       <p className="text-sm sm:text-base md:text-lg text-neutral-100">
         Our festival honors centuries-old Japanese traditions while embracing{" "}
-        <Highlight>modern expressions</Highlight>. Attendees experience everything from{" "}
-        <Highlight>Bon Odori dances</Highlight> to immersive anime art installations — blending{" "}
-        <Highlight>heritage</Highlight> with <Highlight>innovation</Highlight>.
+        <Highlight>modern expressions</Highlight>. Attendees experience
+        everything from <Highlight>Bon Odori dances</Highlight> to immersive
+        anime art installations — blending <Highlight>heritage</Highlight>.
       </p>
     ),
   },
   {
     id: 1,
-    name: "Yumi Tanaka",
+    name: "placeholder name",
     designation: "Festival Volunteer",
     content: (
       <p className="text-sm sm:text-base md:text-lg text-neutral-100">
-        <Highlight>Hikari no Matsuri</Highlight> brings people together. Visitors connect through activities,
-        share moments under lanterns, wear yukatas, and feel the{" "}
-        <Highlight>community spirit</Highlight> that makes our festival so special.
+        <Highlight>Hikari no Matsuri</Highlight> brings people together.
+        Visitors connect through activities, share moments under lanterns, wear
+        yukatas, and feel the <Highlight>community spirit</Highlight> that makes
+        our festival so special.
       </p>
     ),
   },
   {
     id: 2,
-    name: "Aiko Yamashita",
+    name: "placeholder name",
     designation: "Head of Experience",
     content: (
       <p className="text-sm sm:text-base md:text-lg text-neutral-100">
         What makes <Highlight>Hikari no Matsuri</Highlight> truly special is the{" "}
-        <Highlight>community spirit</Highlight>. Every visitor is invited to participate — lighting lanterns,
-        wearing yukatas, enjoying authentic cuisine, and connecting in an atmosphere full of warmth and unity.
+        <Highlight>community spirit</Highlight>. Every visitor is invited to
+        participate — lighting lanterns, and connecting in an atmosphere full of
+        warmth and unity.
       </p>
     ),
   },

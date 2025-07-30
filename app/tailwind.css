@@ -48,3 +48,15 @@ html {
 .animate-fadeIn {
   animation: fadeIn 0.3s ease-out;
 }
+@keyframes scroll-carousel {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-scroll-carousel {
+  animation: scroll-carousel 40s linear infinite;
+}
