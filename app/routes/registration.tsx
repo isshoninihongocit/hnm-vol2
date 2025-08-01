@@ -151,7 +151,7 @@ const RegistrationPage = () => {
     console.log('📊 Fetching purchased plans for email:', userEmail);
     
     try {
-      const response = await fetch(`${API_BASE_URL}/payments/user-purchased-plans/${encodeURIComponent(userEmail)}`, {
+      const response = await fetch(`${API_BASE_URL}/payments/purchased-plans/${encodeURIComponent(userEmail)}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -161,6 +161,10 @@ const RegistrationPage = () => {
       console.log('📥 Purchased plans response status:', response.status);
 
       if (!response.ok) {
+        if (response.status === 404) {
+          console.log('ℹ️ No purchased plans found for user');
+          return [];
+        }
         throw new Error(`Failed to fetch purchased plans: ${response.status}`);
       }
 
@@ -520,6 +524,14 @@ const RegistrationPage = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
+          // Backend validation fields
+          paymentId: paymentData.razorpay_payment_id,
+          orderId: orderData.id,
+          amount: planData.price,
+          currency: orderData.currency || 'INR',
+          userEmail: userData.email,
+          events: [planData.name],
+          // Detailed data for storage
           paymentData: {
             razorpay_payment_id: paymentData.razorpay_payment_id,
             razorpay_order_id: paymentData.razorpay_order_id,
@@ -542,6 +554,18 @@ const RegistrationPage = () => {
             id: userData.id || null,
             name: userData.name,
             email: userData.email
+          },
+          // Registration data for email sending
+          registrationData: {
+            registrationId: `HNM-${Date.now()}`,
+            userEmail: userData.email,
+            userName: userData.name,
+            selectedPass: planData.name,
+            passType: planData.type,
+            dayPass: planData.name,
+            planName: planData.name,
+            planType: planData.type,
+            planPrice: planData.price
           }
         }),
       });
