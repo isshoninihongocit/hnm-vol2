@@ -4,6 +4,7 @@ import {
   Outlet,
   Scripts,
   ScrollRestoration,
+  useLocation,
 } from "@remix-run/react";
 import type { LinksFunction } from "@remix-run/node";
 import BackgroundPattern from "~/components/BackgroundPattern";
@@ -25,6 +26,9 @@ export const links: LinksFunction = () => [
 ];
 
 export function Layout({ children }: { children: React.ReactNode }) {
+  const location = useLocation();
+  const isAdminPanel = location.pathname.startsWith('/admin');
+
   return (
     <html lang="en">
       <head>
@@ -34,10 +38,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        <BackgroundPattern />
+        {!isAdminPanel && <BackgroundPattern />}
         <AuthProvider>
-          <Navbar />
-          <main className="pt-20">{children}</main>
+          {!isAdminPanel && <Navbar />}
+          <main className={isAdminPanel ? "" : "pt-20"}>{children}</main>
         </AuthProvider>
         <ScrollRestoration />
         <Scripts />

@@ -3,6 +3,15 @@
 
 import { useState, useEffect } from "react";
 import { useNavigate } from "@remix-run/react";
+import { Button } from "~/components/ui/button";
+import { Input } from "~/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~/components/ui/select";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/ui/card";
+import { Badge } from "~/components/ui/badge";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "~/components/ui/table";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "~/components/ui/dialog";
+import { Download, Search, Eye, Check, X, LogOut, BarChart3, Users, Plus, Trash2 } from "lucide-react";
+import { toast, Toaster } from "sonner";
 
 const API_BASE_URL = "https://hnm2-be.vercel.app";
 
@@ -54,6 +63,8 @@ const AdminPanel = () => {
   const [registrations, setRegistrations] = useState<Registration[]>([]);
   const [analytics, setAnalytics] = useState<Analytics | null>(null);
   const [loading, setLoading] = useState(false);
+  const [registrationsLoading, setRegistrationsLoading] = useState(false);
+  const [analyticsLoading, setAnalyticsLoading] = useState(false);
   const [error, setError] = useState("");
   
   // Filters and pagination
@@ -66,6 +77,19 @@ const AdminPanel = () => {
     currentPage: 1,
     limit: 20
   });
+
+  // Add registration dialog states
+  const [showAddDialog, setShowAddDialog] = useState(false);
+  const [addRegistrationForm, setAddRegistrationForm] = useState({
+    userName: "",
+    userEmail: "",
+    planName: "",
+    planType: "pass",
+    planPrice: 0,
+    paymentId: "",
+    paymentStatus: "Pending"
+  });
+  const [addingRegistration, setAddingRegistration] = useState(false);
 
   // Check authentication on mount
   useEffect(() => {
@@ -92,7 +116,18 @@ const AdminPanel = () => {
         loadRegistrations();
       }
     }
-  }, [isAuthenticated, activeTab, filters, pagination]);
+  }, [isAuthenticated, activeTab]);
+
+  // Load registrations when filters change (with debounce)
+  useEffect(() => {
+    if (isAuthenticated && activeTab === "registrations") {
+      const timeoutId = setTimeout(() => {
+        loadRegistrations();
+      }, 300); // 300ms debounce
+
+      return () => clearTimeout(timeoutId);
+    }
+  }, [filters.search, filters.planType, filters.planName, pagination.currentPage]);
 
   // Admin login
   const handleLogin = async (e: React.FormEvent) => {
@@ -138,7 +173,8 @@ const AdminPanel = () => {
 
   // Load analytics data
   const loadAnalytics = async () => {
-    setLoading(true);
+    setAnalyticsLoading(true);
+    setError("");
     try {
       const token = localStorage.getItem("adminToken");
       const response = await fetch(`${API_BASE_URL}/admin/analytics`, {
@@ -148,40 +184,62 @@ const AdminPanel = () => {
       if (response.ok) {
         const data = await response.json();
         setAnalytics(data.analytics);
+      } else {
+        setError("Failed to load analytics");
       }
     } catch (error) {
       console.error("Failed to load analytics:", error);
+      setError("Network error while loading analytics");
     } finally {
-      setLoading(false);
+      setAnalyticsLoading(false);
     }
   };
 
   // Load registrations data
   const loadRegistrations = async () => {
-    setLoading(true);
+    setRegistrationsLoading(true);
+    setError("");
     try {
       const token = localStorage.getItem("adminToken");
       const queryParams = new URLSearchParams({
         page: pagination.currentPage.toString(),
         limit: pagination.limit.toString(),
-        ...filters,
       });
 
+      // Only add non-empty filters
+      if (filters.search.trim()) queryParams.append('search', filters.search.trim());
+      if (filters.planType) queryParams.append('planType', filters.planType);
+      if (filters.planName) queryParams.append('planName', filters.planName);
+
+      console.log("Loading registrations from:", `${API_BASE_URL}/admin/registrations?${queryParams}`);
+      const startTime = performance.now();
+      
       const response = await fetch(
         `${API_BASE_URL}/admin/registrations?${queryParams}`,
         {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { 
+            Authorization: `Bearer ${token}`
+          },
         }
       );
 
+      const endTime = performance.now();
+      console.log(`Registration API call took ${endTime - startTime} milliseconds`);
+
       if (response.ok) {
         const data = await response.json();
-        setRegistrations(data.registrations);
+        console.log("Registrations loaded:", data.registrations?.length || 0, "items");
+        setRegistrations(data.registrations || []);
+      } else {
+        const errorText = await response.text();
+        console.error("Registration loading error:", response.status, errorText);
+        setError(`Failed to load registrations (${response.status})`);
       }
     } catch (error) {
       console.error("Failed to load registrations:", error);
+      setError("Network error while loading registrations");
     } finally {
-      setLoading(false);
+      setRegistrationsLoading(false);
     }
   };
 
@@ -202,20 +260,149 @@ const AdminPanel = () => {
       );
 
       if (response.ok) {
-        loadRegistrations(); // Refresh data
-        alert(`Registration ${verified ? "verified" : "unverified"} successfully!`);
+        // Update the registration status in the local state immediately
+        setRegistrations(prevRegistrations => 
+          prevRegistrations.map(reg => 
+            reg.id === registrationId 
+              ? { 
+                  ...reg, 
+                  paymentStatus: verified ? "Verified" : "Pending",
+                  adminVerified: verified 
+                }
+              : reg
+          )
+        );
+
+        // Show success toast
+        toast.success(
+          verified 
+            ? "Registration verified successfully!" 
+            : "Registration marked as pending!"
+        );
+      } else {
+        const errorText = await response.text();
+        console.error("Verify registration error:", errorText);
+        toast.error("Failed to update registration status");
       }
     } catch (error) {
       console.error("Failed to verify registration:", error);
-      alert("Failed to update registration status");
+      toast.error("Network error while updating registration");
     }
   };
 
-  // Export CSV
-  const exportCSV = async () => {
+  // Delete registration states
+  const [deleteConfirmDialog, setDeleteConfirmDialog] = useState<{
+    open: boolean;
+    registrationId: string;
+    registrationName: string;
+  }>({
+    open: false,
+    registrationId: "",
+    registrationName: ""
+  });
+
+  // Delete registration
+  // Delete registration
+  const deleteRegistration = async (registrationId: string) => {
     try {
       const token = localStorage.getItem("adminToken");
-      const response = await fetch(`${API_BASE_URL}/admin/export/csv`, {
+      const response = await fetch(
+        `${API_BASE_URL}/admin/registration/${registrationId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      if (response.ok) {
+        // Remove the registration from local state immediately
+        setRegistrations(prevRegistrations => 
+          prevRegistrations.filter(reg => reg.id !== registrationId)
+        );
+
+        // Close the confirmation dialog
+        setDeleteConfirmDialog({ open: false, registrationId: "", registrationName: "" });
+        
+        // Show success toast
+        toast.success("Registration deleted successfully!");
+      } else {
+        const errorText = await response.text();
+        console.error("Delete registration error:", errorText);
+        toast.error("Failed to delete registration");
+      }
+    } catch (error) {
+      console.error("Failed to delete registration:", error);
+      toast.error("Network error while deleting registration");
+    }
+  };
+
+  // Handle delete confirmation
+  const handleDeleteClick = (registrationId: string, registrationName: string) => {
+    setDeleteConfirmDialog({
+      open: true,
+      registrationId,
+      registrationName
+    });
+  };
+
+  // Add registration
+  const addRegistration = async () => {
+    setAddingRegistration(true);
+    try {
+      const token = localStorage.getItem("adminToken");
+      const response = await fetch(`${API_BASE_URL}/admin/registration`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(addRegistrationForm),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        
+        // Add the new registration to local state
+        const newRegistration = {
+          ...data.data,
+          id: data.registrationId
+        };
+        setRegistrations(prevRegistrations => [newRegistration, ...prevRegistrations]);
+
+        // Close dialog and reset form
+        setShowAddDialog(false);
+        setAddRegistrationForm({
+          userName: "",
+          userEmail: "",
+          planName: "",
+          planType: "pass",
+          planPrice: 0,
+          paymentId: "",
+          paymentStatus: "Pending"
+        });
+
+        // Show success toast
+        toast.success("Registration added successfully!");
+      } else {
+        const errorText = await response.text();
+        console.error("Add registration error:", errorText);
+        toast.error("Failed to add registration");
+      }
+    } catch (error) {
+      console.error("Failed to add registration:", error);
+      toast.error("Network error while adding registration");
+    } finally {
+      setAddingRegistration(false);
+    }
+  };
+
+  // Export Excel
+  const exportExcel = async () => {
+    try {
+      const token = localStorage.getItem("adminToken");
+      const response = await fetch(`${API_BASE_URL}/admin/export/excel`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -224,14 +411,14 @@ const AdminPanel = () => {
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement("a");
         a.href = url;
-        a.download = `registrations-${new Date().toISOString().split("T")[0]}.csv`;
+        a.download = `registrations-${new Date().toISOString().split("T")[0]}.xlsx`;
         document.body.appendChild(a);
         a.click();
         window.URL.revokeObjectURL(url);
         document.body.removeChild(a);
       }
     } catch (error) {
-      console.error("Failed to export CSV:", error);
+      console.error("Failed to export Excel:", error);
       alert("Failed to export data");
     }
   };
@@ -239,101 +426,104 @@ const AdminPanel = () => {
   // Login form
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="bg-gray-800 p-8 rounded-lg shadow-lg w-full max-w-md">
-          <h2 className="text-2xl font-bold text-white mb-6 text-center">
-            Admin Login
-          </h2>
-          
-          {error && (
-            <div className="bg-red-600 text-white p-3 rounded mb-4">
-              {error}
-            </div>
-          )}
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle className="text-2xl text-center">Admin Login</CardTitle>
+          </CardHeader>
+          <CardContent>
+            {error && (
+              <div className="bg-destructive text-destructive-foreground p-3 rounded mb-4">
+                {error}
+              </div>
+            )}
 
-          <form onSubmit={handleLogin}>
-            <div className="mb-4">
-              <label className="block text-gray-300 text-sm font-bold mb-2">
-                Username
-              </label>
-              <input
-                type="text"
-                className="w-full px-3 py-2 bg-gray-700 text-white rounded border border-gray-600 focus:outline-none focus:border-blue-500"
-                value={loginForm.username}
-                onChange={(e) =>
-                  setLoginForm({ ...loginForm, username: e.target.value })
-                }
-                required
-              />
-            </div>
+            <form onSubmit={handleLogin} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  Username
+                </label>
+                <Input
+                  type="text"
+                  value={loginForm.username}
+                  onChange={(e) =>
+                    setLoginForm({ ...loginForm, username: e.target.value })
+                  }
+                  required
+                />
+              </div>
 
-            <div className="mb-6">
-              <label className="block text-gray-300 text-sm font-bold mb-2">
-                Password
-              </label>
-              <input
-                type="password"
-                className="w-full px-3 py-2 bg-gray-700 text-white rounded border border-gray-600 focus:outline-none focus:border-blue-500"
-                value={loginForm.password}
-                onChange={(e) =>
-                  setLoginForm({ ...loginForm, password: e.target.value })
-                }
-                required
-              />
-            </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">
+                  Password
+                </label>
+                <Input
+                  type="password"
+                  value={loginForm.password}
+                  onChange={(e) =>
+                    setLoginForm({ ...loginForm, password: e.target.value })
+                  }
+                  required
+                />
+              </div>
 
-            <button
-              type="submit"
-              disabled={loginLoading}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline disabled:opacity-50"
-            >
-              {loginLoading ? "Logging in..." : "Login"}
-            </button>
-          </form>
-        </div>
+              <Button
+                type="submit"
+                disabled={loginLoading}
+                className="w-full"
+              >
+                {loginLoading ? "Logging in..." : "Login"}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
       </div>
     );
   }
 
   // Main admin panel
   return (
-    <div className="min-h-screen bg-gray-900 text-white">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-gray-800 shadow-lg">
+      <header className="border-b bg-card">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <h1 className="text-xl font-bold">
+            <h1 className="text-xl font-bold flex items-center gap-2">
+              <BarChart3 className="h-6 w-6" />
               Hikari no Matsuri - Admin Panel
             </h1>
             <div className="flex items-center space-x-4">
-              <span className="text-gray-300">Welcome, {admin?.username}</span>
-              <button
+              <span className="text-muted-foreground">Welcome, {admin?.username}</span>
+              <Button
                 onClick={logout}
-                className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded text-sm"
+                variant="outline"
+                size="sm"
               >
+                <LogOut className="h-4 w-4 mr-2" />
                 Logout
-              </button>
+              </Button>
             </div>
           </div>
         </div>
       </header>
 
       {/* Navigation */}
-      <nav className="bg-gray-800 border-t border-gray-700">
+      <nav className="border-b bg-card">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex space-x-8">
-            {["dashboard", "registrations"].map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`py-4 px-1 border-b-2 font-medium text-sm capitalize ${
-                  activeTab === tab
-                    ? "border-blue-500 text-blue-400"
-                    : "border-transparent text-gray-300 hover:text-white hover:border-gray-300"
-                }`}
+            {[
+              { id: "dashboard", label: "Dashboard", icon: BarChart3 },
+              { id: "registrations", label: "Registrations", icon: Users }
+            ].map((tab) => (
+              <Button
+                key={tab.id}
+                variant={activeTab === tab.id ? "default" : "ghost"}
+                onClick={() => setActiveTab(tab.id)}
+                className="h-12 px-4"
               >
-                {tab}
-              </button>
+                <tab.icon className="h-4 w-4 mr-2" />
+                {tab.label}
+              </Button>
             ))}
           </div>
         </div>
@@ -341,87 +531,133 @@ const AdminPanel = () => {
 
       {/* Content */}
       <main className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
-        {loading && (
-          <div className="text-center py-8">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
-            <p className="mt-2">Loading...</p>
-          </div>
+        {error && (
+          <Card className="border-destructive mb-6">
+            <CardContent className="pt-6">
+              <div className="text-destructive text-center">
+                <p>{error}</p>
+                <Button 
+                  onClick={() => activeTab === "dashboard" ? loadAnalytics() : loadRegistrations()}
+                  variant="outline" 
+                  size="sm" 
+                  className="mt-2"
+                >
+                  Retry
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         )}
 
         {/* Dashboard Tab */}
-        {activeTab === "dashboard" && analytics && (
+        {activeTab === "dashboard" && (
           <div className="space-y-6">
-            {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <div className="bg-gray-800 p-6 rounded-lg">
-                <h3 className="text-lg font-semibold mb-2">Total Registrations</h3>
-                <p className="text-3xl font-bold text-blue-400">
-                  {analytics.totalRegistrations}
-                </p>
+            {analyticsLoading ? (
+              <div className="text-center py-12">
+                <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                <p className="mt-2 text-muted-foreground">Loading analytics...</p>
               </div>
-              <div className="bg-gray-800 p-6 rounded-lg">
-                <h3 className="text-lg font-semibold mb-2">Total Revenue</h3>
-                <p className="text-3xl font-bold text-green-400">
-                  ₹{analytics.totalRevenue.toLocaleString()}
-                </p>
-              </div>
-              <div className="bg-gray-800 p-6 rounded-lg">
-                <h3 className="text-lg font-semibold mb-2">Verified</h3>
-                <p className="text-3xl font-bold text-green-400">
-                  {analytics.verificationStatus.verified}
-                </p>
-              </div>
-              <div className="bg-gray-800 p-6 rounded-lg">
-                <h3 className="text-lg font-semibold mb-2">Pending</h3>
-                <p className="text-3xl font-bold text-yellow-400">
-                  {analytics.verificationStatus.pending}
-                </p>
-              </div>
-            </div>
+            ) : analytics ? (
+              <>
+                {/* Stats Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                  <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium">Total Registrations</CardTitle>
+                      <Users className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">{analytics.totalRegistrations}</div>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium">Total Revenue</CardTitle>
+                      <BarChart3 className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold text-green-600">
+                        ₹{analytics.totalRevenue.toLocaleString()}
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium">Verified</CardTitle>
+                      <Check className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold text-green-600">
+                        {analytics.verificationStatus.verified}
+                      </div>
+                    </CardContent>
+                  </Card>
+                  <Card>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium">Pending</CardTitle>
+                      <Eye className="h-4 w-4 text-muted-foreground" />
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold text-yellow-600">
+                        {analytics.verificationStatus.pending}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
 
-            {/* Top Plans */}
-            <div className="bg-gray-800 p-6 rounded-lg">
-              <h3 className="text-lg font-semibold mb-4">Top Plans</h3>
-              <div className="space-y-2">
-                {analytics.topPlans.map((plan, index) => (
-                  <div key={plan.name} className="flex justify-between items-center">
-                    <span>{plan.name}</span>
-                    <span className="bg-blue-600 px-2 py-1 rounded text-sm">
-                      {plan.count} registrations
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
+                {/* Top Plans */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Top Plans</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-2">
+                      {analytics.topPlans.map((plan, index) => (
+                        <div key={plan.name} className="flex justify-between items-center">
+                          <span>{plan.name}</span>
+                          <Badge variant="secondary">
+                            {plan.count} registrations
+                          </Badge>
+                        </div>
+                      ))}
+                    </div>
+                  </CardContent>
+                </Card>
 
-            {/* Recent Registrations */}
-            <div className="bg-gray-800 p-6 rounded-lg">
-              <h3 className="text-lg font-semibold mb-4">Recent Registrations</h3>
-              <div className="overflow-x-auto">
-                <table className="min-w-full">
-                  <thead>
-                    <tr className="border-b border-gray-700">
-                      <th className="text-left py-2">Name</th>
-                      <th className="text-left py-2">Plan</th>
-                      <th className="text-left py-2">Revenue</th>
-                      <th className="text-left py-2">Date</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {analytics.recentRegistrations.map((reg) => (
-                      <tr key={reg.id} className="border-b border-gray-700">
-                        <td className="py-2">{reg.userName}</td>
-                        <td className="py-2">{reg.planName}</td>
-                        <td className="py-2">₹{reg.revenue}</td>
-                        <td className="py-2">
-                          {new Date(reg.registrationDate).toLocaleDateString()}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+                {/* Recent Registrations */}
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Recent Registrations</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Name</TableHead>
+                          <TableHead>Plan</TableHead>
+                          <TableHead>Revenue</TableHead>
+                          <TableHead>Date</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {analytics.recentRegistrations.map((reg) => (
+                          <TableRow key={reg.id}>
+                            <TableCell>{reg.userName}</TableCell>
+                            <TableCell>
+                              <Badge variant="outline">{reg.planName}</Badge>
+                            </TableCell>
+                            <TableCell>₹{reg.revenue}</TableCell>
+                            <TableCell>
+                              {new Date(reg.registrationDate).toLocaleDateString()}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </CardContent>
+                </Card>
+              </>
+            ) : null}
           </div>
         )}
 
@@ -429,104 +665,353 @@ const AdminPanel = () => {
         {activeTab === "registrations" && (
           <div className="space-y-6">
             {/* Filters and Actions */}
-            <div className="bg-gray-800 p-6 rounded-lg">
-              <div className="flex flex-wrap items-center justify-between gap-4">
-                <div className="flex flex-wrap items-center gap-4">
-                  <input
-                    type="text"
-                    placeholder="Search..."
-                    className="px-3 py-2 bg-gray-700 border border-gray-600 rounded"
-                    value={filters.search}
-                    onChange={(e) =>
-                      setFilters({ ...filters, search: e.target.value })
-                    }
-                  />
-                  <select
-                    className="px-3 py-2 bg-gray-700 border border-gray-600 rounded"
-                    value={filters.planType}
-                    onChange={(e) =>
-                      setFilters({ ...filters, planType: e.target.value })
-                    }
-                  >
-                    <option value="">All Types</option>
-                    <option value="pass">Pass</option>
-                    <option value="workshop">Workshop</option>
-                  </select>
+            <Card>
+              <CardContent className="pt-6">
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                  <div className="flex flex-wrap items-center gap-4">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input
+                        placeholder="Search registrations..."
+                        className="pl-10 w-64"
+                        value={filters.search}
+                        onChange={(e) =>
+                          setFilters({ ...filters, search: e.target.value })
+                        }
+                      />
+                    </div>
+                    <Select 
+                      value={filters.planType || "all"} 
+                      onValueChange={(value) => setFilters({ ...filters, planType: value === "all" ? "" : value })}
+                    >
+                      <SelectTrigger className="w-40">
+                        <SelectValue placeholder="All Types" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="all">All Types</SelectItem>
+                        <SelectItem value="pass">Pass</SelectItem>
+                        <SelectItem value="workshop">Workshop</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      onClick={() => setShowAddDialog(true)}
+                      className="gap-2"
+                    >
+                      <Plus className="h-4 w-4" />
+                      Add Registration
+                    </Button>
+                    <Button
+                      onClick={exportExcel}
+                      variant="outline"
+                      className="gap-2"
+                    >
+                      <Download className="h-4 w-4" />
+                      Export Excel
+                    </Button>
+                  </div>
                 </div>
-                <button
-                  onClick={exportCSV}
-                  className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded"
-                >
-                  Export CSV
-                </button>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
 
             {/* Registrations Table */}
-            <div className="bg-gray-800 rounded-lg overflow-hidden">
-              <div className="overflow-x-auto">
-                <table className="min-w-full">
-                  <thead className="bg-gray-700">
-                    <tr>
-                      <th className="text-left py-3 px-4">Registration ID</th>
-                      <th className="text-left py-3 px-4">Name</th>
-                      <th className="text-left py-3 px-4">Email</th>
-                      <th className="text-left py-3 px-4">Plan</th>
-                      <th className="text-left py-3 px-4">Price</th>
-                      <th className="text-left py-3 px-4">Status</th>
-                      <th className="text-left py-3 px-4">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {registrations.map((reg) => (
-                      <tr key={reg.id} className="border-b border-gray-700">
-                        <td className="py-3 px-4 font-mono text-sm">
-                          {reg.registrationId}
-                        </td>
-                        <td className="py-3 px-4">{reg.userName}</td>
-                        <td className="py-3 px-4">{reg.userEmail}</td>
-                        <td className="py-3 px-4">
-                          <span className="bg-blue-600 px-2 py-1 rounded text-xs">
-                            {reg.planName}
-                          </span>
-                        </td>
-                        <td className="py-3 px-4">₹{reg.planPrice}</td>
-                        <td className="py-3 px-4">
-                          <span
-                            className={`px-2 py-1 rounded text-xs ${
-                              reg.paymentStatus === "Verified"
-                                ? "bg-green-600"
-                                : "bg-yellow-600"
-                            }`}
-                          >
-                            {reg.paymentStatus}
-                          </span>
-                        </td>
-                        <td className="py-3 px-4">
-                          <div className="flex space-x-2">
-                            <button
-                              onClick={() => verifyRegistration(reg.id, true)}
-                              className="bg-green-600 hover:bg-green-700 px-2 py-1 rounded text-xs"
-                            >
-                              Verify
-                            </button>
-                            <button
-                              onClick={() => verifyRegistration(reg.id, false)}
-                              className="bg-red-600 hover:bg-red-700 px-2 py-1 rounded text-xs"
-                            >
-                              Reject
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
+            <Card>
+              <CardContent className="p-0">
+                {registrationsLoading ? (
+                  <div className="text-center py-12">
+                    <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                    <p className="mt-2 text-muted-foreground">Loading registrations...</p>
+                  </div>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Registration ID</TableHead>
+                        <TableHead>Name</TableHead>
+                        <TableHead>Email</TableHead>
+                        <TableHead>Plan</TableHead>
+                        <TableHead>Price</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead>Actions</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {registrations.length > 0 ? (
+                        registrations.map((reg) => (
+                          <TableRow key={reg.id}>
+                            <TableCell className="font-mono text-sm">
+                              {reg.registrationId}
+                            </TableCell>
+                            <TableCell className="font-medium">{reg.userName}</TableCell>
+                            <TableCell>{reg.userEmail}</TableCell>
+                            <TableCell>
+                              <Badge variant="secondary">
+                                {reg.planName}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>₹{reg.planPrice}</TableCell>
+                            <TableCell>
+                              <Badge
+                                variant={
+                                  reg.paymentStatus === "Verified" ? "default" : "secondary"
+                                }
+                              >
+                                {reg.paymentStatus}
+                              </Badge>
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex space-x-2">
+                                <Button
+                                  onClick={() => verifyRegistration(reg.id, true)}
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-8 w-8 p-0"
+                                  title="Verify registration"
+                                >
+                                  <Check className="h-4 w-4 text-green-600" />
+                                </Button>
+                                <Button
+                                  onClick={() => verifyRegistration(reg.id, false)}
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-8 w-8 p-0"
+                                  title="Unverify registration"
+                                >
+                                  <X className="h-4 w-4 text-red-600" />
+                                </Button>
+                                <Button
+                                  onClick={() => handleDeleteClick(reg.id, reg.userName)}
+                                  size="sm"
+                                  variant="outline"
+                                  className="h-8 w-8 p-0"
+                                  title="Delete registration"
+                                >
+                                  <Trash2 className="h-4 w-4 text-red-600" />
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        ))
+                      ) : (
+                        <TableRow>
+                          <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
+                            No registrations found
+                          </TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                )}
+              </CardContent>
+            </Card>
           </div>
         )}
       </main>
+
+      {/* Add Registration Dialog */}
+      <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
+        <DialogContent className="sm:max-w-[500px]">
+          <DialogHeader>
+            <DialogTitle>Add New Registration</DialogTitle>
+            <DialogDescription>
+              Add a new registration for on-spot attendees.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="userName" className="text-right">
+                Name
+              </label>
+              <Input
+                id="userName"
+                value={addRegistrationForm.userName}
+                onChange={(e) =>
+                  setAddRegistrationForm({
+                    ...addRegistrationForm,
+                    userName: e.target.value,
+                  })
+                }
+                className="col-span-3"
+                placeholder="Enter full name"
+              />
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="userEmail" className="text-right">
+                Email
+              </label>
+              <Input
+                id="userEmail"
+                type="email"
+                value={addRegistrationForm.userEmail}
+                onChange={(e) =>
+                  setAddRegistrationForm({
+                    ...addRegistrationForm,
+                    userEmail: e.target.value,
+                  })
+                }
+                className="col-span-3"
+                placeholder="Enter email address"
+              />
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="planType" className="text-right">
+                Type
+              </label>
+              <Select
+                value={addRegistrationForm.planType}
+                onValueChange={(value) =>
+                  setAddRegistrationForm({
+                    ...addRegistrationForm,
+                    planType: value,
+                  })
+                }
+              >
+                <SelectTrigger className="col-span-3">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="pass">Pass</SelectItem>
+                  <SelectItem value="workshop">Workshop</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="planName" className="text-right">
+                Plan Name
+              </label>
+              <Input
+                id="planName"
+                value={addRegistrationForm.planName}
+                onChange={(e) =>
+                  setAddRegistrationForm({
+                    ...addRegistrationForm,
+                    planName: e.target.value,
+                  })
+                }
+                className="col-span-3"
+                placeholder="e.g., Day 1 Pass, Cosplay Workshop"
+              />
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="planPrice" className="text-right">
+                Price (₹)
+              </label>
+              <Input
+                id="planPrice"
+                type="number"
+                value={addRegistrationForm.planPrice}
+                onChange={(e) =>
+                  setAddRegistrationForm({
+                    ...addRegistrationForm,
+                    planPrice: parseInt(e.target.value) || 0,
+                  })
+                }
+                className="col-span-3"
+                placeholder="0"
+              />
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="paymentId" className="text-right">
+                Payment ID
+              </label>
+              <Input
+                id="paymentId"
+                value={addRegistrationForm.paymentId}
+                onChange={(e) =>
+                  setAddRegistrationForm({
+                    ...addRegistrationForm,
+                    paymentId: e.target.value,
+                  })
+                }
+                className="col-span-3"
+                placeholder="Payment reference ID (optional)"
+              />
+            </div>
+            
+            <div className="grid grid-cols-4 items-center gap-4">
+              <label htmlFor="paymentStatus" className="text-right">
+                Status
+              </label>
+              <Select
+                value={addRegistrationForm.paymentStatus}
+                onValueChange={(value) =>
+                  setAddRegistrationForm({
+                    ...addRegistrationForm,
+                    paymentStatus: value,
+                  })
+                }
+              >
+                <SelectTrigger className="col-span-3">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Pending">Pending</SelectItem>
+                  <SelectItem value="Verified">Verified</SelectItem>
+                  <SelectItem value="Failed">Failed</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+          
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setShowAddDialog(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              onClick={addRegistration}
+              disabled={addingRegistration || !addRegistrationForm.userName || !addRegistrationForm.userEmail}
+            >
+              {addingRegistration ? "Adding..." : "Add Registration"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={deleteConfirmDialog.open} onOpenChange={(open) => 
+        setDeleteConfirmDialog({ ...deleteConfirmDialog, open })
+      }>
+        <DialogContent className="sm:max-w-[425px]">
+          <DialogHeader>
+            <DialogTitle>Delete Registration</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete the registration for <strong>{deleteConfirmDialog.registrationName}</strong>? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setDeleteConfirmDialog({ open: false, registrationId: "", registrationName: "" })}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={() => deleteRegistration(deleteConfirmDialog.registrationId)}
+            >
+              Delete Registration
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Toast Notifications */}
+      <Toaster position="top-right" richColors />
     </div>
   );
 };
