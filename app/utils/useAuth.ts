@@ -153,10 +153,6 @@ export function logout(): void {
       localStorage.removeItem('userName');
       localStorage.removeItem('registrationIntentId');
       
-      // Clear any other cached data
-      localStorage.removeItem('adminToken');
-      localStorage.removeItem('adminData');
-      
       console.log('🧹 All user-specific localStorage data cleared on logout');
     }
   } catch (error) {
