@@ -803,6 +803,14 @@ type Pass = {
   passType: string;
 };
 
+type PurchasedPlan = {
+  planName: string;
+  planType: string;
+  planPrice: number;
+  purchaseDate: string;
+  paymentId: string;
+};
+
 const API_BASE_URL = "https://hnm2-be.vercel.app";
 
 const passes: Record<string, Pass[]> = {
@@ -976,17 +984,71 @@ export default function Registration() {
   const [userName, setUserName] = useState("");
   const [showUserForm, setShowUserForm] = useState(false);
   const [selectedPass, setSelectedPass] = useState<Pass | null>(null);
+  const [purchasedPlans, setPurchasedPlans] = useState<PurchasedPlan[]>([]);
+  const [purchasesLoaded, setPurchasesLoaded] = useState(false);
 
   // Check if user info is stored in localStorage
   useEffect(() => {
     const storedEmail = localStorage.getItem("userEmail");
     const storedName = localStorage.getItem("userName");
     
-    if (storedEmail) setUserEmail(storedEmail);
+    if (storedEmail) {
+      setUserEmail(storedEmail);
+      // Load purchased plans for this email
+      loadPurchasedPlans(storedEmail);
+    }
     if (storedName) setUserName(storedName);
   }, []);
 
+  // Function to load purchased plans
+  const loadPurchasedPlans = async (email: string) => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/payments/purchased-plans/${encodeURIComponent(email)}`);
+      
+      if (response.ok) {
+        const data = await response.json();
+        setPurchasedPlans(data.purchasedPlans || []);
+        console.log('✅ Loaded purchased plans:', data.purchasedPlans);
+      } else {
+        console.log('ℹ️ No purchased plans found');
+        setPurchasedPlans([]);
+      }
+    } catch (error) {
+      console.error('❌ Error loading purchased plans:', error);
+      setPurchasedPlans([]);
+    } finally {
+      setPurchasesLoaded(true);
+    }
+  };
+
+  // Check if a pass is already purchased
+  const isPurchased = (pass: Pass): boolean => {
+    if (!userEmail || !purchasesLoaded) return false;
+    
+    return purchasedPlans.some(plan => 
+      plan.planName === pass.name && plan.planType === pass.passType
+    );
+  };
+
+  // Get purchase details for a pass
+  const getPurchaseDetails = (pass: Pass): PurchasedPlan | null => {
+    return purchasedPlans.find(plan => 
+      plan.planName === pass.name && plan.planType === pass.passType
+    ) || null;
+  };
+
   const handlePassPurchase = async (pass: Pass) => {
+    // Check if pass is already purchased
+    if (isPurchased(pass)) {
+      const purchaseDetails = getPurchaseDetails(pass);
+      toast.success(`You already purchased ${pass.name}!`, {
+        description: purchaseDetails 
+          ? `Purchased on ${new Date(purchaseDetails.purchaseDate).toLocaleDateString()}`
+          : 'This pass is already in your collection.'
+      });
+      return;
+    }
+
     // Check if user info is available
     if (!userEmail || !userName) {
       setSelectedPass(pass);
