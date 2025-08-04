@@ -194,24 +194,8 @@
 //     );
 //   };
 //
-  // 🔥 UPDATED: Load purchased plans when component mounts or user changes
-  useEffect(() => {
-    const loadPurchasedPlans = async () => {
-      if (user?.email) {
-        console.log('🔄 Loading purchased plans by email...');
-        const plans = await fetchPurchasedPlans(user.email);
-        setPurchasedPlans(plans);
-        setPurchasesLoaded(true);
-      } else {
-        // Reset state when user logs out
-        console.log('🧹 Resetting purchased plans - user logged out');
-        setPurchasedPlans([]);
-        setPurchasesLoaded(false);
-      }
-    };
-
-    loadPurchasedPlans();
-  }, [user?.email]); // Remove purchasesLoaded dependency to allow reloading
+// // Export the registration page directly (no authentication guard)
+// export default RegistrationPage;
 //
 //   // Function to create order via your backend
 //   const createOrder = async (amount: number, eventDetails: any, user: any) => {
