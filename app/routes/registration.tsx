@@ -1000,6 +1000,52 @@ export default function Registration() {
     if (storedName) setUserName(storedName);
   }, []);
 
+  // Additional effect to check for payment completion and refresh data
+  useEffect(() => {
+    const checkPaymentCompletion = async () => {
+      // Check if user just returned from payment (URL params or localStorage indicators)
+      const urlParams = new URLSearchParams(window.location.search);
+      const paymentSuccess = urlParams.get('payment') === 'success';
+      const registrationIntentId = localStorage.getItem("registrationIntentId");
+      
+      if (paymentSuccess || registrationIntentId) {
+        console.log('🔄 Payment completion detected, refreshing purchased plans...');
+        
+        // Clear the intent ID to avoid repeated refreshes
+        if (registrationIntentId) {
+          localStorage.removeItem("registrationIntentId");
+        }
+        
+        // Refresh purchased plans
+        const storedEmail = localStorage.getItem("userEmail");
+        if (storedEmail) {
+          console.log('🔄 Refreshing purchased plans for:', storedEmail);
+          await loadPurchasedPlans(storedEmail);
+          
+          // Show success message
+          if (paymentSuccess) {
+            toast.success("Payment completed successfully! Your pass has been activated.");
+          }
+        }
+      }
+    };
+
+    // Run check after component mounts
+    const timer = setTimeout(checkPaymentCompletion, 1000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // Function to manually refresh purchased plans (for testing)
+  const refreshPurchasedPlans = async () => {
+    const storedEmail = localStorage.getItem("userEmail");
+    if (storedEmail) {
+      console.log('🔄 Manual refresh of purchased plans for:', storedEmail);
+      setPurchasesLoaded(false);
+      await loadPurchasedPlans(storedEmail);
+      toast.success("Purchased plans refreshed!");
+    }
+  };
+
   // Function to load purchased plans
   const loadPurchasedPlans = async (email: string) => {
     try {
@@ -1124,6 +1170,43 @@ export default function Registration() {
       <h1 className="text-center text-4xl md:text-5xl font-bold text-red-600 mb-10 tracking-wider">
         CHOOSE YOUR PLAN
       </h1>
+
+      {/* Debug/Status Section */}
+      {userEmail && (
+        <div className="mb-6 p-4 bg-gray-900 rounded-lg border border-gray-700 max-w-4xl mx-auto">
+          <div className="flex justify-between items-center mb-2">
+            <h3 className="text-lg font-bold text-green-400">User Status</h3>
+            <button
+              onClick={refreshPurchasedPlans}
+              className="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700 transition"
+            >
+              Refresh Plans
+            </button>
+          </div>
+          <div className="grid grid-cols-2 gap-4 text-sm">
+            <div>
+              <p className="text-gray-300">Email: <span className="text-white">{userEmail}</span></p>
+              <p className="text-gray-300">Name: <span className="text-white">{userName || 'Not set'}</span></p>
+            </div>
+            <div>
+              <p className="text-gray-300">Plans Loaded: <span className={purchasesLoaded ? 'text-green-400' : 'text-yellow-400'}>{purchasesLoaded ? 'Yes' : 'Loading...'}</span></p>
+              <p className="text-gray-300">Purchased: <span className="text-white">{purchasedPlans.length} plans</span></p>
+            </div>
+          </div>
+          {purchasedPlans.length > 0 && (
+            <div className="mt-2 pt-2 border-t border-gray-700">
+              <p className="text-sm text-gray-300">Your Plans:</p>
+              <div className="flex flex-wrap gap-2 mt-1">
+                {purchasedPlans.map((plan, idx) => (
+                  <span key={idx} className="px-2 py-1 bg-green-800 text-green-100 rounded text-xs">
+                    {plan.planName} ({plan.planType})
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* User Info Form Modal */}
       {showUserForm && (
