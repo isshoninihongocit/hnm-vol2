@@ -834,7 +834,7 @@ const passes: Record<string, Pass[]> = {
         "Digital Certificate of Participation",
       ],
       button: "BUY NOW",
-      link: "https://pages.razorpay.com/hnmgeneral",
+      link: "https://rzp.io/rzp/hnmgeneral",
       passType: "general_day1"
     },
     {
@@ -874,9 +874,10 @@ const passes: Record<string, Pass[]> = {
         "Limited Slots Available per Workshop",
       ],
       button: "BUY NOW ",
-      link: "https://rzp.io/rzp/hnmworkshop",
+      link: "https://rzp.io/l/hnmworkshop",
       passType: "workshop_day1"
     },
+    
   ],
   "Day 2": [
     {
@@ -894,7 +895,7 @@ const passes: Record<string, Pass[]> = {
         "Digital Certificate of Participation",
       ],
       button: "BUY NOW",
-      link: "https://rzp.io/rzp/hnmgeneralday2",
+      link: "https://rzp.io/rzp/hnmgeneral",
       passType: "general_day2"
     },
     {
@@ -912,7 +913,7 @@ const passes: Record<string, Pass[]> = {
         "Certificate of Premium Participation",
       ],
       button: "BUY NOW",
-      link: "https://rzp.io/rzp/hnmpremiumday2",
+      link: "https://rzp.io/rzp/hnmpremium",
       passType: "premium_day2"
     },
     {
@@ -930,7 +931,7 @@ const passes: Record<string, Pass[]> = {
         "Workshop Certificates",
       ],
       button: "BUY NOW ",
-      link: "https://rzp.io/rzp/hnmworkshopday2",
+      link: "https://rzp.io/l/hnmworkshop",
       passType: "workshop_day2"
     },
   ],
