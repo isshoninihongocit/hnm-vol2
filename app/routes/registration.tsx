@@ -786,19 +786,24 @@
 // export default RegistrationPage;
 
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { CheckCircle2 } from "lucide-react";
+import { CheckCircle2, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
 type Pass = {
   index: number;
   name: string;
   price: string;
+  priceValue: number;
   description: string;
   features: string[];
   button: string;
   link: string;
+  passType: string;
 };
+
+const API_BASE_URL = "https://hnm2-be.vercel.app";
 
 const passes: Record<string, Pass[]> = {
   "Day 1": [
@@ -806,6 +811,7 @@ const passes: Record<string, Pass[]> = {
       index: 0,
       name: "GENERAL",
       price: "₹100",
+      priceValue: 100,
       description:
         "The General Pass gives you access to the heart of Hikari no Matsuri! Join us for two days of anime quizzes, ninja runs, art, and cultural exchange perfect for all Japanese culture enthusiasts.",
       features: [
@@ -820,11 +826,13 @@ const passes: Record<string, Pass[]> = {
       ],
       button: "BUY NOW",
       link: "https://pages.razorpay.com/hnmgeneral",
+      passType: "general_day1"
     },
     {
       index: 1,
       name: "PREMIUM",
       price: "₹200",
+      priceValue: 200,
       description:
         "Unlock the full experience of Hikari no Matsuri with our Premium Pass. Exclusive workshops, VIP access, and special merch. For the true Nihon enthusiast!",
       features: [
@@ -837,11 +845,13 @@ const passes: Record<string, Pass[]> = {
       ],
       button: "BUY NOW",
       link: "https://rzp.io/rzp/hnmpremium",
+      passType: "premium_day1"
     },
     {
       index: 2,
       name: "WORKSHOPS & ADD-ONS",
       price: "₹300",
+      priceValue: 300,
       description:
         "Enhance your Hikari no Matsuri experience by enrolling in our exclusive workshops. Hands-on learning and cultural immersion from professionals.",
       features: [
@@ -856,6 +866,7 @@ const passes: Record<string, Pass[]> = {
       ],
       button: "BUY NOW ",
       link: "https://rzp.io/rzp/hnmworkshop",
+      passType: "workshop_day1"
     },
   ],
   "Day 2": [
@@ -863,6 +874,7 @@ const passes: Record<string, Pass[]> = {
       index: 0,
       name: "GENERAL",
       price: "₹100",
+      priceValue: 100,
       description:
         "Same General benefits carry over with focus on quizzes, performances, and artist showcases for Day 2.",
       features: [
@@ -874,11 +886,13 @@ const passes: Record<string, Pass[]> = {
       ],
       button: "BUY NOW",
       link: "https://rzp.io/rzp/hnmgeneralday2",
+      passType: "general_day2"
     },
     {
       index: 1,
       name: "PREMIUM",
       price: "₹200",
+      priceValue: 200,
       description:
         "Full access to Day 2 events plus exclusive cultural perks and workshops.",
       features: [
@@ -890,11 +904,13 @@ const passes: Record<string, Pass[]> = {
       ],
       button: "BUY NOW",
       link: "https://rzp.io/rzp/hnmpremiumday2",
+      passType: "premium_day2"
     },
     {
       index: 2,
       name: "WORKSHOPS & ADD-ONS",
       price: "₹300",
+      priceValue: 300,
       description:
         "Cultural depth and skill-building through immersive workshops with limited access.",
       features: [
@@ -905,7 +921,8 @@ const passes: Record<string, Pass[]> = {
         "Workshop Certificates",
       ],
       button: "BUY NOW ",
-      link: "https://rzp.io/rzp/hnmworkshop",
+      link: "https://rzp.io/rzp/hnmworkshopday2",
+      passType: "workshop_day2"
     },
   ],
 
@@ -914,45 +931,187 @@ const passes: Record<string, Pass[]> = {
       index: 0,
       name: "GENERAL",
       price: "₹150",
+      priceValue: 150,
       description:
-        "Same General benefits carry over with focus on quizzes, performances, and artist showcases for Day 2.",
+        "Get both days of General Pass benefits with a combo discount! Perfect for the full Hikari no Matsuri experience.",
       features: [
+        "All Day 1 & Day 2 General Events",
         "Akihabara no Quest – Anime Quiz",
         "O-Talku Zone!",
         "Musical Performance – Notes of Nippon",
         "Artist Alley",
         "Digital Certificate of Participation",
+        "Save ₹50 with Combo Pricing!",
       ],
       button: "BUY NOW",
       link: "https://rzp.io/rzp/generalcombo",
+      passType: "general_combo"
     },
     {
       index: 1,
       name: "PREMIUM",
-      price: "₹250",
+      price: "₹350",
+      priceValue: 350,
       description:
-        "Full access to Day 2 events plus exclusive cultural perks and workshops.",
+        "Complete Premium experience for both days with exclusive perks and workshops.",
       features: [
-        "All General Pass Events",
-        "Yukata Experience – Dress Like a Native",
+        "All General Combo Benefits",
+        "Yukata Experience – Both Days",
         "Shodō – Japanese Calligraphy Workshop",
         "Premium Badge & VIP Seating",
         "Certificate of Premium Participation",
+        "Save ₹50 with Combo Pricing!",
       ],
       button: "BUY NOW",
       link: "https://rzp.io/rzp/hnmpremiumcombo",
+      passType: "premium_combo"
     },
   ],
 };
 
 export default function Registration() {
   const [day, setDay] = useState<"Day 1" | "Day 2" | "Combo">("Combo");
+  const [loadingPassIndex, setLoadingPassIndex] = useState<number | null>(null);
+  const [userEmail, setUserEmail] = useState("");
+  const [userName, setUserName] = useState("");
+  const [showUserForm, setShowUserForm] = useState(false);
+  const [selectedPass, setSelectedPass] = useState<Pass | null>(null);
+
+  // Check if user info is stored in localStorage
+  useEffect(() => {
+    const storedEmail = localStorage.getItem("userEmail");
+    const storedName = localStorage.getItem("userName");
+    
+    if (storedEmail) setUserEmail(storedEmail);
+    if (storedName) setUserName(storedName);
+  }, []);
+
+  const handlePassPurchase = async (pass: Pass) => {
+    // Check if user info is available
+    if (!userEmail || !userName) {
+      setSelectedPass(pass);
+      setShowUserForm(true);
+      return;
+    }
+
+    await initiatePayment(pass);
+  };
+
+  const initiatePayment = async (pass: Pass) => {
+    setLoadingPassIndex(pass.index);
+    
+    try {
+      // Store user info in localStorage
+      localStorage.setItem("userEmail", userEmail);
+      localStorage.setItem("userName", userName);
+
+      // Create registration intent
+      const intentResponse = await fetch(`${API_BASE_URL}/payments/create-registration-intent`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          passType: pass.passType,
+          passName: pass.name,
+          passPrice: pass.priceValue,
+          userEmail: userEmail,
+          userName: userName,
+          additionalData: {
+            daySelected: day,
+            passFeatures: pass.features,
+            passDescription: pass.description
+          }
+        }),
+      });
+
+      if (!intentResponse.ok) {
+        throw new Error('Failed to create registration intent');
+      }
+
+      const intentData = await intentResponse.json();
+      
+      // Store intent ID in localStorage for post-payment tracking
+      localStorage.setItem("registrationIntentId", intentData.intentId);
+
+      toast.success("Registration intent created! Redirecting to payment...");
+
+      // Small delay for user feedback, then redirect to payment page
+      setTimeout(() => {
+        window.open(pass.link, '_blank');
+      }, 1000);
+
+    } catch (error) {
+      console.error('Error initiating payment:', error);
+      toast.error("Failed to initiate payment. Please try again.");
+    } finally {
+      setLoadingPassIndex(null);
+    }
+  };
+
+  const handleUserFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (userEmail && userName && selectedPass) {
+      setShowUserForm(false);
+      initiatePayment(selectedPass);
+    }
+  };
 
   return (
     <div className="bg-black text-white px-6 py-10 font-hnm min-h-screen">
       <h1 className="text-center text-4xl md:text-5xl font-bold text-red-600 mb-10 tracking-wider">
         CHOOSE YOUR PLAN
       </h1>
+
+      {/* User Info Form Modal */}
+      {showUserForm && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50">
+          <div className="bg-gray-900 p-6 rounded-lg max-w-md w-full mx-4">
+            <h2 className="text-2xl font-bold text-red-600 mb-4">Complete Your Registration</h2>
+            <p className="text-gray-300 mb-4">Please provide your details to continue with the purchase:</p>
+            
+            <form onSubmit={handleUserFormSubmit}>
+              <div className="mb-4">
+                <label className="block text-gray-300 mb-2">Full Name *</label>
+                <input
+                  type="text"
+                  value={userName}
+                  onChange={(e) => setUserName(e.target.value)}
+                  className="w-full p-2 rounded bg-gray-800 text-white border border-gray-600 focus:border-red-600 outline-none"
+                  required
+                />
+              </div>
+              
+              <div className="mb-4">
+                <label className="block text-gray-300 mb-2">Email Address *</label>
+                <input
+                  type="email"
+                  value={userEmail}
+                  onChange={(e) => setUserEmail(e.target.value)}
+                  className="w-full p-2 rounded bg-gray-800 text-white border border-gray-600 focus:border-red-600 outline-none"
+                  required
+                />
+              </div>
+              
+              <div className="flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setShowUserForm(false)}
+                  className="flex-1 py-2 px-4 bg-gray-600 text-white rounded hover:bg-gray-700 transition"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 py-2 px-4 bg-red-600 text-white rounded hover:bg-red-700 transition"
+                >
+                  Continue to Payment
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Day Toggle Buttons */}
       <div className="flex justify-center mb-10 gap-4">
@@ -975,7 +1134,7 @@ export default function Registration() {
       <div className="grid md:grid-cols-3 gap-6 max-w-7xl mx-auto">
         {passes[day].map((pass) => (
           <motion.div
-            key={pass.index}
+            key={`${day}-${pass.index}`}
             whileHover={{ scale: 1.02 }}
             className="border border-gray-500 rounded-3xl p-6 flex flex-col justify-between bg-[#111111]"
           >
@@ -994,20 +1153,39 @@ export default function Registration() {
                 ))}
               </ul>
             </div>
-            <a
-              href={pass.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={`mt-6 inline-block w-full py-2 rounded-full text-center font-bold transition ${
-                pass.button === "BUY NOW"
-                  ? "bg-gradient-to-r from-green-400 to-blue-500 text-black"
-                  : "bg-gradient-to-r from-purple-500 to-pink-500 text-white"
+            
+            <button
+              onClick={() => handlePassPurchase(pass)}
+              disabled={loadingPassIndex === pass.index}
+              className={`mt-6 w-full py-2 rounded-full text-center font-bold transition flex items-center justify-center ${
+                loadingPassIndex === pass.index
+                  ? "bg-gray-600 text-gray-300 cursor-not-allowed"
+                  : pass.button === "BUY NOW"
+                  ? "bg-gradient-to-r from-green-400 to-blue-500 text-black hover:from-green-500 hover:to-blue-600"
+                  : "bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600"
               }`}
             >
-              {pass.button}
-            </a>
+              {loadingPassIndex === pass.index ? (
+                <>
+                  <Loader2 size={16} className="animate-spin mr-2" />
+                  Processing...
+                </>
+              ) : (
+                pass.button
+              )}
+            </button>
           </motion.div>
         ))}
+      </div>
+
+      {/* Info Section */}
+      <div className="mt-12 text-center text-gray-400">
+        <p className="mb-2">
+          After clicking "BUY NOW", you'll be redirected to a secure Razorpay payment page.
+        </p>
+        <p className="text-sm">
+          Your registration will be automatically confirmed once payment is completed.
+        </p>
       </div>
     </div>
   );

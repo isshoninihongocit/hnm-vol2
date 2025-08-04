@@ -10,6 +10,7 @@ import type { LinksFunction } from "@remix-run/node";
 import BackgroundPattern from "~/components/BackgroundPattern";
 import { AuthProvider } from "./context/AuthContext";
 import Navbar from "./components/Navbar";
+import { Toaster } from "sonner";
 import "./tailwind.css";
 
 export const links: LinksFunction = () => [
@@ -43,6 +44,17 @@ export function Layout({ children }: { children: React.ReactNode }) {
           {!isAdminPanel && <Navbar />}
           <main className={isAdminPanel ? "" : "pt-20"}>{children}</main>
         </AuthProvider>
+        <Toaster 
+          position="top-right" 
+          theme="dark"
+          toastOptions={{
+            style: {
+              background: '#1f2937',
+              color: '#fff',
+              border: '1px solid #374151'
+            }
+          }}
+        />
         <ScrollRestoration />
         <Scripts />
       </body>
