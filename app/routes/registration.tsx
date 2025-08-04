@@ -1069,11 +1069,28 @@ export default function Registration() {
 
   // Check if a pass is already purchased
   const isPurchased = (pass: Pass): boolean => {
-    if (!userEmail || !purchasesLoaded) return false;
+    if (!userEmail || !purchasesLoaded) {
+      console.log('🔍 isPurchased check failed:', { userEmail: !!userEmail, purchasesLoaded });
+      return false;
+    }
     
-    return purchasedPlans.some(plan => 
-      plan.planName === pass.name && plan.planType === pass.passType
-    );
+    const isMatch = purchasedPlans.some(plan => {
+      const nameMatch = plan.planName === pass.name;
+      const typeMatch = plan.planType === pass.passType;
+      console.log('🔍 Checking purchase match:', {
+        passName: pass.name,
+        passType: pass.passType,
+        planName: plan.planName,
+        planType: plan.planType,
+        nameMatch,
+        typeMatch,
+        overallMatch: nameMatch && typeMatch
+      });
+      return nameMatch && typeMatch;
+    });
+    
+    console.log('🔍 Final isPurchased result:', { passName: pass.name, passType: pass.passType, isMatch });
+    return isMatch;
   };
 
   // Get purchase details for a pass
@@ -1301,16 +1318,23 @@ export default function Registration() {
             
             <button
               onClick={() => handlePassPurchase(pass)}
-              disabled={loadingPassIndex === pass.index}
+              disabled={loadingPassIndex === pass.index || isPurchased(pass)}
               className={`mt-6 w-full py-2 rounded-full text-center font-bold transition flex items-center justify-center ${
-                loadingPassIndex === pass.index
+                isPurchased(pass)
+                  ? "bg-green-500 text-white cursor-not-allowed"
+                  : loadingPassIndex === pass.index
                   ? "bg-gray-600 text-gray-300 cursor-not-allowed"
                   : pass.button === "BUY NOW"
                   ? "bg-gradient-to-r from-green-400 to-blue-500 text-black hover:from-green-500 hover:to-blue-600"
                   : "bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:from-purple-600 hover:to-pink-600"
               }`}
             >
-              {loadingPassIndex === pass.index ? (
+              {isPurchased(pass) ? (
+                <>
+                  <CheckCircle2 size={16} className="mr-2" />
+                  Already Purchased
+                </>
+              ) : loadingPassIndex === pass.index ? (
                 <>
                   <Loader2 size={16} className="animate-spin mr-2" />
                   Processing...
