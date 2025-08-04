@@ -194,19 +194,24 @@
 //     );
 //   };
 //
-//   // 🔥 UPDATED: Load purchased plans when component mounts
-//   useEffect(() => {
-//     const loadPurchasedPlans = async () => {
-//       if (user?.email && !purchasesLoaded) {
-//         console.log('🔄 Loading purchased plans by email...');
-//         const plans = await fetchPurchasedPlans(user.email);
-//         setPurchasedPlans(plans);
-//         setPurchasesLoaded(true);
-//       }
-//     };
-//
-//     loadPurchasedPlans();
-//   }, [user?.email, purchasesLoaded]);
+  // 🔥 UPDATED: Load purchased plans when component mounts or user changes
+  useEffect(() => {
+    const loadPurchasedPlans = async () => {
+      if (user?.email) {
+        console.log('🔄 Loading purchased plans by email...');
+        const plans = await fetchPurchasedPlans(user.email);
+        setPurchasedPlans(plans);
+        setPurchasesLoaded(true);
+      } else {
+        // Reset state when user logs out
+        console.log('🧹 Resetting purchased plans - user logged out');
+        setPurchasedPlans([]);
+        setPurchasesLoaded(false);
+      }
+    };
+
+    loadPurchasedPlans();
+  }, [user?.email]); // Remove purchasesLoaded dependency to allow reloading
 //
 //   // Function to create order via your backend
 //   const createOrder = async (amount: number, eventDetails: any, user: any) => {
@@ -992,33 +997,36 @@ export default function Registration() {
 
   // Check if user info is available from auth context or localStorage
   useEffect(() => {
+    console.log('🔄 User state changed:', { 
+      userEmail: user?.email, 
+      userUsername: user?.username,
+      hasUser: !!user 
+    });
+
+    // Reset state first
+    setPurchasesLoaded(false);
+    setPurchasedPlans([]);
+    
     // Priority 1: Use authenticated user from AuthContext
     if (user?.email) {
       console.log('🔐 Using authenticated user:', user.email);
       setUserEmail(user.email);
       setUserName(user.username || "");
-      // Reset state before loading
-      setPurchasesLoaded(false);
-      setPurchasedPlans([]);
-      // Load purchased plans for authenticated user with small delay to ensure data consistency
+      // Load purchased plans for authenticated user
       setTimeout(() => loadPurchasedPlans(user.email), 100);
       return;
     }
-
-    // Priority 2: Fallback to localStorage for backward compatibility
-    const storedEmail = localStorage.getItem("userEmail");
-    const storedName = localStorage.getItem("userName");
     
-    if (storedEmail) {
-      console.log('📱 Using localStorage email:', storedEmail);
-      setUserEmail(storedEmail);
-      // Reset state before loading
-      setPurchasesLoaded(false);
-      setPurchasedPlans([]);
-      // Load purchased plans for stored email with small delay
-      setTimeout(() => loadPurchasedPlans(storedEmail), 100);
-    }
-    if (storedName) setUserName(storedName);
+    // If no authenticated user, clear all user data and reset localStorage
+    console.log('🧹 No authenticated user - clearing user data');
+    setUserEmail("");
+    setUserName("");
+    
+    // Clear localStorage when no user is authenticated
+    localStorage.removeItem("userEmail");
+    localStorage.removeItem("userName");
+    localStorage.removeItem("registrationIntentId");
+    
   }, [user]); // Re-run when user changes
 
   // Additional effect to check for payment completion and refresh data
@@ -1037,11 +1045,10 @@ export default function Registration() {
           localStorage.removeItem("registrationIntentId");
         }
         
-        // Refresh purchased plans
-        const storedEmail = localStorage.getItem("userEmail");
-        if (storedEmail) {
-          console.log('🔄 Refreshing purchased plans for:', storedEmail);
-          await loadPurchasedPlans(storedEmail);
+        // Refresh purchased plans only for authenticated users
+        if (user?.email) {
+          console.log('🔄 Refreshing purchased plans for:', user.email);
+          await loadPurchasedPlans(user.email);
           
           // Show success message
           if (paymentSuccess) {
@@ -1055,11 +1062,11 @@ export default function Registration() {
     const timer = setTimeout(checkPaymentCompletion, 1000);
     
     // Also set up a periodic refresh every 30 seconds to catch any webhook delays
+    // Only for authenticated users
     const refreshInterval = setInterval(() => {
-      const currentEmail = user?.email || userEmail;
-      if (currentEmail && document.visibilityState === 'visible') {
+      if (user?.email && document.visibilityState === 'visible') {
         console.log('🔄 Periodic refresh of purchase data...');
-        loadPurchasedPlans(currentEmail, 0);
+        loadPurchasedPlans(user.email, 0);
       }
     }, 30000);
     
@@ -1067,20 +1074,21 @@ export default function Registration() {
       clearTimeout(timer);
       clearInterval(refreshInterval);
     };
-  }, [user?.email, userEmail]); // Re-run when email changes
+  }, [user?.email]); // Re-run when email changes
 
   // Function to manually refresh purchased plans (for testing)
   const refreshPurchasedPlans = async () => {
-    // Priority 1: Use authenticated user
-    const currentEmail = user?.email || userEmail || localStorage.getItem("userEmail");
+    // Only use authenticated user email, not localStorage
+    const currentEmail = user?.email;
     
     if (currentEmail) {
       console.log('🔄 Manual refresh of purchased plans for:', currentEmail);
       setPurchasesLoaded(false);
+      setPurchasedPlans([]);
       await loadPurchasedPlans(currentEmail);
       toast.success("Purchased plans refreshed!");
     } else {
-      toast.error("No user email found. Please login first.");
+      toast.error("Please login first to view your purchased plans.");
     }
   };
 
@@ -1144,12 +1152,10 @@ export default function Registration() {
 
   // Check if a pass is already purchased
   const isPurchased = (pass: Pass): boolean => {
-    const currentEmail = user?.email || userEmail;
-    if (!currentEmail || !purchasesLoaded) {
+    // Only check for authenticated users
+    if (!user?.email || !purchasesLoaded) {
       console.log('🔍 isPurchased check failed:', { 
-        userEmail: !!currentEmail, 
-        authUser: !!user?.email,
-        localEmail: !!userEmail,
+        userEmail: !!user?.email, 
         purchasesLoaded 
       });
       return false;
@@ -1159,7 +1165,7 @@ export default function Registration() {
       const nameMatch = plan.planName === pass.name;
       const typeMatch = plan.planType === pass.passType;
       console.log('🔍 Checking purchase match:', {
-        currentEmail,
+        currentEmail: user.email,
         passName: pass.name,
         passType: pass.passType,
         planName: plan.planName,
@@ -1183,6 +1189,14 @@ export default function Registration() {
   };
 
   const handlePassPurchase = async (pass: Pass) => {
+    // Require authentication for purchases
+    if (!user?.email) {
+      toast.error("Please login first to purchase passes.", {
+        description: "You need to be authenticated to make a purchase."
+      });
+      return;
+    }
+
     // Check if pass is already purchased
     if (isPurchased(pass)) {
       const purchaseDetails = getPurchaseDetails(pass);
@@ -1194,23 +1208,30 @@ export default function Registration() {
       return;
     }
 
-    // Check if user info is available
-    if (!userEmail || !userName) {
-      setSelectedPass(pass);
-      setShowUserForm(true);
-      return;
-    }
+    // Use authenticated user info
+    const currentUserEmail = user.email;
+    const currentUserName = user.username || user.email.split('@')[0];
 
-    await initiatePayment(pass);
+    await initiatePayment(pass, currentUserEmail, currentUserName);
   };
 
-  const initiatePayment = async (pass: Pass) => {
+  const initiatePayment = async (pass: Pass, email?: string, name?: string) => {
     setLoadingPassIndex(pass.index);
+    
+    // Use provided email/name or fall back to state
+    const finalEmail = email || userEmail;
+    const finalName = name || userName;
+    
+    if (!finalEmail || !finalName) {
+      toast.error("Email and name are required for payment");
+      setLoadingPassIndex(null);
+      return;
+    }
     
     try {
       // Store user info in localStorage
-      localStorage.setItem("userEmail", userEmail);
-      localStorage.setItem("userName", userName);
+      localStorage.setItem("userEmail", finalEmail);
+      localStorage.setItem("userName", finalName);
 
       // Create registration intent
       const intentResponse = await fetch(`${API_BASE_URL}/payments/create-registration-intent`, {
@@ -1222,8 +1243,8 @@ export default function Registration() {
           passType: pass.passType,
           passName: pass.name,
           passPrice: pass.priceValue,
-          userEmail: userEmail,
-          userName: userName,
+          userEmail: finalEmail,
+          userName: finalName,
           additionalData: {
             daySelected: day,
             passFeatures: pass.features,
@@ -1260,7 +1281,7 @@ export default function Registration() {
     e.preventDefault();
     if (userEmail && userName && selectedPass) {
       setShowUserForm(false);
-      initiatePayment(selectedPass);
+      initiatePayment(selectedPass, userEmail, userName);
     }
   };
 
@@ -1270,8 +1291,8 @@ export default function Registration() {
         CHOOSE YOUR PLAN
       </h1>
 
-      {/* Debug/Status Section */}
-      {(user?.email || userEmail) && (
+      {/* Debug/Status Section - Only show for authenticated users */}
+      {user?.email && (
         <div className="mb-6 p-4 bg-gray-900 rounded-lg border border-gray-700 max-w-4xl mx-auto">
           <div className="flex justify-between items-center mb-2">
             <h3 className="text-lg font-bold text-green-400">User Status</h3>
@@ -1285,12 +1306,10 @@ export default function Registration() {
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
               <p className="text-gray-300">
-                Auth Status: <span className={user ? 'text-green-400' : 'text-yellow-400'}>
-                  {user ? 'Authenticated' : 'LocalStorage Only'}
-                </span>
+                Auth Status: <span className="text-green-400">Authenticated</span>
               </p>
-              <p className="text-gray-300">Email: <span className="text-white">{user?.email || userEmail}</span></p>
-              <p className="text-gray-300">Name: <span className="text-white">{user?.username || userName || 'Not set'}</span></p>
+              <p className="text-gray-300">Email: <span className="text-white">{user.email}</span></p>
+              <p className="text-gray-300">Name: <span className="text-white">{user.username || 'Not set'}</span></p>
             </div>
             <div>
               <p className="text-gray-300">
@@ -1314,6 +1333,16 @@ export default function Registration() {
               </div>
             </div>
           )}
+        </div>
+      )}
+
+      {/* Login prompt for non-authenticated users */}
+      {!user?.email && (
+        <div className="mb-6 p-4 bg-yellow-900 border border-yellow-600 rounded-lg max-w-4xl mx-auto">
+          <h3 className="text-lg font-bold text-yellow-200 mb-2">Authentication Required</h3>
+          <p className="text-yellow-100">
+            Please <a href="/login" className="text-yellow-200 underline hover:text-yellow-100">login</a> to view your purchased passes and make new purchases.
+          </p>
         </div>
       )}
 

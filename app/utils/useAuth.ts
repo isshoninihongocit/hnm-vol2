@@ -143,9 +143,21 @@ export async function login(email: string, password: string): Promise<AuthRespon
 export function logout(): void {
   try {
     if (typeof window !== 'undefined') {
+      // Clear authentication tokens
       localStorage.removeItem('authToken');
       localStorage.removeItem('refreshToken');
       localStorage.removeItem('user');
+      
+      // Clear cached user data
+      localStorage.removeItem('userEmail');
+      localStorage.removeItem('userName');
+      localStorage.removeItem('registrationIntentId');
+      
+      // Clear any other cached data
+      localStorage.removeItem('adminToken');
+      localStorage.removeItem('adminData');
+      
+      console.log('🧹 All user-specific localStorage data cleared on logout');
     }
   } catch (error) {
     console.error('Error during logout:', error);
