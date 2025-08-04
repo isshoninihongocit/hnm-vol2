@@ -790,6 +790,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { CheckCircle2, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { useAuth } from "../context/AuthContext";
 
 type Pass = {
   index: number;
@@ -978,6 +979,7 @@ const passes: Record<string, Pass[]> = {
 };
 
 export default function Registration() {
+  const { user } = useAuth(); // Get authenticated user
   const [day, setDay] = useState<"Day 1" | "Day 2" | "Combo">("Combo");
   const [loadingPassIndex, setLoadingPassIndex] = useState<number | null>(null);
   const [userEmail, setUserEmail] = useState("");
@@ -987,18 +989,36 @@ export default function Registration() {
   const [purchasedPlans, setPurchasedPlans] = useState<PurchasedPlan[]>([]);
   const [purchasesLoaded, setPurchasesLoaded] = useState(false);
 
-  // Check if user info is stored in localStorage
+  // Check if user info is available from auth context or localStorage
   useEffect(() => {
+    // Priority 1: Use authenticated user from AuthContext
+    if (user?.email) {
+      console.log('🔐 Using authenticated user:', user.email);
+      setUserEmail(user.email);
+      setUserName(user.username || "");
+      // Reset state before loading
+      setPurchasesLoaded(false);
+      setPurchasedPlans([]);
+      // Load purchased plans for authenticated user with small delay to ensure data consistency
+      setTimeout(() => loadPurchasedPlans(user.email), 100);
+      return;
+    }
+
+    // Priority 2: Fallback to localStorage for backward compatibility
     const storedEmail = localStorage.getItem("userEmail");
     const storedName = localStorage.getItem("userName");
     
     if (storedEmail) {
+      console.log('📱 Using localStorage email:', storedEmail);
       setUserEmail(storedEmail);
-      // Load purchased plans for this email
-      loadPurchasedPlans(storedEmail);
+      // Reset state before loading
+      setPurchasesLoaded(false);
+      setPurchasedPlans([]);
+      // Load purchased plans for stored email with small delay
+      setTimeout(() => loadPurchasedPlans(storedEmail), 100);
     }
     if (storedName) setUserName(storedName);
-  }, []);
+  }, [user]); // Re-run when user changes
 
   // Additional effect to check for payment completion and refresh data
   useEffect(() => {
@@ -1032,36 +1052,90 @@ export default function Registration() {
 
     // Run check after component mounts
     const timer = setTimeout(checkPaymentCompletion, 1000);
-    return () => clearTimeout(timer);
-  }, []);
+    
+    // Also set up a periodic refresh every 30 seconds to catch any webhook delays
+    const refreshInterval = setInterval(() => {
+      const currentEmail = user?.email || userEmail;
+      if (currentEmail && document.visibilityState === 'visible') {
+        console.log('🔄 Periodic refresh of purchase data...');
+        loadPurchasedPlans(currentEmail, 0);
+      }
+    }, 30000);
+    
+    return () => {
+      clearTimeout(timer);
+      clearInterval(refreshInterval);
+    };
+  }, [user?.email, userEmail]); // Re-run when email changes
 
   // Function to manually refresh purchased plans (for testing)
   const refreshPurchasedPlans = async () => {
-    const storedEmail = localStorage.getItem("userEmail");
-    if (storedEmail) {
-      console.log('🔄 Manual refresh of purchased plans for:', storedEmail);
+    // Priority 1: Use authenticated user
+    const currentEmail = user?.email || userEmail || localStorage.getItem("userEmail");
+    
+    if (currentEmail) {
+      console.log('🔄 Manual refresh of purchased plans for:', currentEmail);
       setPurchasesLoaded(false);
-      await loadPurchasedPlans(storedEmail);
+      await loadPurchasedPlans(currentEmail);
       toast.success("Purchased plans refreshed!");
+    } else {
+      toast.error("No user email found. Please login first.");
     }
   };
 
   // Function to load purchased plans
-  const loadPurchasedPlans = async (email: string) => {
+  const loadPurchasedPlans = async (email: string, retryCount = 0) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/payments/purchased-plans/${encodeURIComponent(email)}`);
+      console.log(`🔄 Loading purchased plans for ${email} (attempt ${retryCount + 1})`);
+      
+      // Add cache busting timestamp - only use URL parameter, no headers
+      const cacheBuster = Date.now();
+      const response = await fetch(`${API_BASE_URL}/payments/purchased-plans/${encodeURIComponent(email)}?t=${cacheBuster}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
       
       if (response.ok) {
         const data = await response.json();
-        setPurchasedPlans(data.purchasedPlans || []);
-        console.log('✅ Loaded purchased plans:', data.purchasedPlans);
+        console.log('✅ Raw API response:', data);
+        
+        const plans = data.purchasedPlans || [];
+        setPurchasedPlans(plans);
+        
+        console.log('✅ Loaded purchased plans:', plans);
+        
+        // Log each plan for debugging
+        plans.forEach((plan: PurchasedPlan, idx: number) => {
+          console.log(`   Plan ${idx + 1}:`, {
+            name: plan.planName,
+            type: plan.planType,
+            price: plan.planPrice
+          });
+        });
+        
       } else {
-        console.log('ℹ️ No purchased plans found');
+        console.log('ℹ️ No purchased plans found or API error:', response.status);
         setPurchasedPlans([]);
+        
+        // Retry once if it's the first attempt and we get a server error
+        if (retryCount === 0 && response.status >= 500) {
+          console.log('🔄 Retrying due to server error...');
+          setTimeout(() => loadPurchasedPlans(email, retryCount + 1), 1000);
+          return;
+        }
       }
     } catch (error) {
       console.error('❌ Error loading purchased plans:', error);
       setPurchasedPlans([]);
+      
+      // Retry once if it's the first attempt
+      if (retryCount === 0) {
+        console.log('🔄 Retrying due to network error...');
+        setTimeout(() => loadPurchasedPlans(email, retryCount + 1), 1000);
+        return;
+      }
     } finally {
       setPurchasesLoaded(true);
     }
@@ -1069,8 +1143,14 @@ export default function Registration() {
 
   // Check if a pass is already purchased
   const isPurchased = (pass: Pass): boolean => {
-    if (!userEmail || !purchasesLoaded) {
-      console.log('🔍 isPurchased check failed:', { userEmail: !!userEmail, purchasesLoaded });
+    const currentEmail = user?.email || userEmail;
+    if (!currentEmail || !purchasesLoaded) {
+      console.log('🔍 isPurchased check failed:', { 
+        userEmail: !!currentEmail, 
+        authUser: !!user?.email,
+        localEmail: !!userEmail,
+        purchasesLoaded 
+      });
       return false;
     }
     
@@ -1078,6 +1158,7 @@ export default function Registration() {
       const nameMatch = plan.planName === pass.name;
       const typeMatch = plan.planType === pass.passType;
       console.log('🔍 Checking purchase match:', {
+        currentEmail,
         passName: pass.name,
         passType: pass.passType,
         planName: plan.planName,
@@ -1189,7 +1270,7 @@ export default function Registration() {
       </h1>
 
       {/* Debug/Status Section */}
-      {userEmail && (
+      {(user?.email || userEmail) && (
         <div className="mb-6 p-4 bg-gray-900 rounded-lg border border-gray-700 max-w-4xl mx-auto">
           <div className="flex justify-between items-center mb-2">
             <h3 className="text-lg font-bold text-green-400">User Status</h3>
@@ -1202,11 +1283,21 @@ export default function Registration() {
           </div>
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <p className="text-gray-300">Email: <span className="text-white">{userEmail}</span></p>
-              <p className="text-gray-300">Name: <span className="text-white">{userName || 'Not set'}</span></p>
+              <p className="text-gray-300">
+                Auth Status: <span className={user ? 'text-green-400' : 'text-yellow-400'}>
+                  {user ? 'Authenticated' : 'LocalStorage Only'}
+                </span>
+              </p>
+              <p className="text-gray-300">Email: <span className="text-white">{user?.email || userEmail}</span></p>
+              <p className="text-gray-300">Name: <span className="text-white">{user?.username || userName || 'Not set'}</span></p>
             </div>
             <div>
-              <p className="text-gray-300">Plans Loaded: <span className={purchasesLoaded ? 'text-green-400' : 'text-yellow-400'}>{purchasesLoaded ? 'Yes' : 'Loading...'}</span></p>
+              <p className="text-gray-300">
+                Plans Loaded: <span className={purchasesLoaded ? 'text-green-400' : 'text-yellow-400'}>
+                  {purchasesLoaded ? 'Yes' : 'Loading...'}
+                </span>
+                {!purchasesLoaded && <span className="ml-2 text-xs">(This may take a moment)</span>}
+              </p>
               <p className="text-gray-300">Purchased: <span className="text-white">{purchasedPlans.length} plans</span></p>
             </div>
           </div>
