@@ -801,7 +801,7 @@ type PurchasedPlan = {
   paymentId: string;
 };
 
-const API_BASE_URL = "https://hnm2-be.vercel.app";
+const API_BASE_URL = process.env.API_BASE_URL ;
 
 const passes: Record<string, Pass[]> = {
   "Day 1": [
