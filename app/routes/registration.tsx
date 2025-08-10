@@ -1270,8 +1270,8 @@ export default function Registration() {
   };
 
   return (
-    <div className="bg-black text-white px-6 py-10 font-hnm min-h-screen">
-      <h1 className="text-center text-4xl md:text-5xl font-bold text-red-600 mb-10 tracking-wider">
+    <div className="bg-black text-white px-6 py-10 font-sans min-h-screen">
+      <h1 className="text-center text-4xl md:text-5xl font-bold font-hnm text-red-600 mb-10 tracking-wider">
         CHOOSE YOUR PLAN
       </h1>
 
