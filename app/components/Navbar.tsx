@@ -104,7 +104,7 @@ export default function Navbar() {
             ["fun", "Fun Events"],
             ["registration", "Register"],
             ["about", "About"],
-            ["delegates", "Japanese Delegates"],
+            ["delegates", "Chief guest "],
             ["sponsors", "Sponsors"],
           ].map(([path, label]) => (
             <Link
