@@ -17,8 +17,9 @@ const workshops: Workshop[] = [
     id: 1,
     title: "KAMICRAFT",
     role: "Origami Workshop",
-    poster: "/p9.jpg",
-    description: "Unfold the magic of Japanese paper folding. Learn cranes, blossoms & more.",
+    poster: "/origamimain.png",
+    description:
+      "Unfold the magic of Japanese paper folding. Learn cranes, blossoms & more.",
     rules: [
       "Open to all students with valid College ID.",
       "Materials provided, handle with care.",
@@ -29,8 +30,9 @@ const workshops: Workshop[] = [
     id: 2,
     title: "KENDO WORKSHOP",
     role: "Way of the Sword",
-    poster: "/p7.jpg",
-    description: "Step into the world of Kendo — the Japanese art of swordsmanship. Learn basic stances, strikes, and discipline from trained practitioners.",
+    poster: "/Kendo.png",
+    description:
+      "Step into the world of Kendo — the Japanese art of swordsmanship. Learn basic stances, strikes, and discipline from trained practitioners.",
     rules: [
       "Open to all participants with valid ID.",
       "All equipment will be provided. Handle with care.",
@@ -43,8 +45,9 @@ const workshops: Workshop[] = [
     id: 3,
     title: "SHODO SPIRIT",
     role: "Japanese Calligraphy",
-    poster: "/p4.jpg",
-    description: "Experience the art of brush, ink & balance. Write beautiful kanji & proverbs.",
+    poster: "/cal.png",
+    description:
+      "Experience the art of brush, ink & balance. Write beautiful kanji & proverbs.",
     rules: [
       "Open to all students with valid College ID.",
       "Brushes & ink provided, clean up after use.",
@@ -82,7 +85,9 @@ function WorkshopCard({ workshop }: { workshop: Workshop }) {
       </div>
       <div className="flex justify-between items-center p-4 border-t border-black space-x-2">
         <div className="flex-1 min-w-0">
-          <h2 className="font-bold text-xl truncate text-white">{workshop.title}</h2>
+          <h2 className="font-bold text-xl truncate text-white">
+            {workshop.title}
+          </h2>
           <p className="text-sm text-white">{workshop.role}</p>
           <p className="text-xs mt-2 text-white">{workshop.description}</p>
         </div>

@@ -55,20 +55,20 @@ export const Highlight = ({
 const CARDS = [
   {
     id: 0,
-    name: "placeholder name",
-    designation: "Cultural Ambassador",
+    name: "Aksshay",
+    designation: "Festival Organizer",
     content: (
       <p className="text-sm sm:text-base md:text-lg text-neutral-100">
         Our festival honors centuries-old Japanese traditions while embracing{" "}
         <Highlight>modern expressions</Highlight>. Attendees experience
         everything from <Highlight>Bon Odori dances</Highlight> to immersive
-        anime art installations — blending <Highlight>heritage</Highlight>.
+        art and cultural<Highlight>heritage</Highlight>.
       </p>
     ),
   },
   {
     id: 1,
-    name: "placeholder name",
+    name: "Ramesh Kumar",
     designation: "Festival Volunteer",
     content: (
       <p className="text-sm sm:text-base md:text-lg text-neutral-100">
@@ -81,7 +81,7 @@ const CARDS = [
   },
   {
     id: 2,
-    name: "placeholder name",
+    name: "Venkatesh",
     designation: "Head of Experience",
     content: (
       <p className="text-sm sm:text-base md:text-lg text-neutral-100">

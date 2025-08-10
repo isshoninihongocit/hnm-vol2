@@ -11,50 +11,26 @@ type Delegate = {
 
 const delegates: Delegate[] = [
   {
-    name: "Mr. ABC",
-    title: "ABC",
-    photo: "/hnmmainwhite.png",
-    bio: "HNM Hikari Nihongo Matsuri is a cultural festival celebrating Japanese language and culture in South India. It features workshops, performances, and exhibitions to promote cultural exchange.",
+    name: "Mr.TAGA Masayuki",
+    title: "Consulate-General of Japan",
+    photo: "/csg.jpg",
+    bio: "Representing the Government of Japan, Taga Masayuki san, Consul General of Japan, is committed to deepening cultural and economic connections between Japan and India. His support for Hikari no Matsuri reflects the festival’s mission of celebrating and sharing Japanese heritage.",
+  },
+  {
+    name: "Ms.Sonu Gupta",
+    title: "Assistant Director at Japan Foundation New Delhi",
+    photo: "/sonu.png",
+    bio: "As Assistant Director at the Japan Foundation, New Delhi, Sonu Gupta works tirelessly to promote Japanese culture, arts, and language education in India. Her efforts help create meaningful cross-cultural experiences, enriching the spirit of Hikari no Matsuri.",
   },
 
-  {
-    name: "Mr. ABC",
-    title: "ABC",
-    photo: "/hnmmainwhite.png",
-    bio: "HNM Hikari Nihongo Matsuri is a cultural festival celebrating Japanese language and culture in South India. It features workshops, performances, and exhibitions to promote cultural exchange.",
-  },
-  {
-    name: "Mr. ABC",
-    title: "ABC",
-    photo: "/hnmmainwhite.png",
-    bio: "HNM Hikari Nihongo Matsuri is a cultural festival celebrating Japanese language and culture in South India. It features workshops, performances, and exhibitions to promote cultural exchange.",
-  },
-  {
-    name: "Mr. ABC",
-    title: "ABC",
-    photo: "/hnmmainwhite.png",
-    bio: "HNM Hikari Nihongo Matsuri is a cultural festival celebrating Japanese language and culture in South India. It features workshops, performances, and exhibitions to promote cultural exchange.",
-  },
-  {
-    name: "Mr. ABC",
-    title: "ABC",
-    photo: "/hnmmainwhite.png",
-    bio: "HNM Hikari Nihongo Matsuri is a cultural festival celebrating Japanese language and culture in South India. It features workshops, performances, and exhibitions to promote cultural exchange.",
-  },
-  {
-    name: "Mr. ABC",
-    title: "ABC",
-    photo: "/hnmmainwhite.png",
-    bio: "HNM Hikari Nihongo Matsuri is a cultural festival celebrating Japanese language and culture in South India. It features workshops, performances, and exhibitions to promote cultural exchange.",
-  },
   // Add more delegates here...
 ];
 
 export default function Delegates() {
   return (
-    <section className="min-h-screen font-hnm px-4 py-20 bg-black text-white flex flex-col items-center">
+    <section className="min-h-screen font-sans px-4 py-20 bg-black text-white flex flex-col items-center">
       <motion.h1
-        className="text-4xl md:text-6xl font-bold mb-10"
+        className="text-4xl md:text-7xl font-hnm font-bold mb-10"
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6 }}

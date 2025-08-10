@@ -40,7 +40,7 @@ export function DraggableCardDemo() {
 
   const items = [
     { title: "Otaku Onstage", image: "/ps1.jpg" },
-    { title: "Artist Alley", image: "/ps2.jpg" },
+    { title: "Origami WORKSHOP", image: "/ps2.jpg" },
     { title: "KENDO WORKSHOP", image: "/ps3.jpg" },
     { title: "Hanetsuki", image: "/ps4.jpg" },
     { title: "COSPLAY CONTEST", image: "/ps5.jpg" },

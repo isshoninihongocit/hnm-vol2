@@ -800,9 +800,7 @@ type PurchasedPlan = {
   purchaseDate: string;
   paymentId: string;
 };
-
 const API_BASE_URL = process.env.API_BASE_URL ;
-
 const passes: Record<string, Pass[]> = {
   "Day 1": [
     {
@@ -866,7 +864,6 @@ const passes: Record<string, Pass[]> = {
       link: "https://rzp.io/l/hnmworkshop",
       passType: "workshop_day1"
     },
-    
   ],
   "Day 2": [
     {
