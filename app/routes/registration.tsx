@@ -800,7 +800,7 @@ type PurchasedPlan = {
   purchaseDate: string;
   paymentId: string;
 };
-const API_BASE_URL = process.env.VITE_API_BASE_URL ;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://hnm2-be.vercel.app';
 const passes: Record<string, Pass[]> = {
   "Day 1": [
     {
