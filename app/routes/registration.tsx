@@ -825,8 +825,8 @@ const passes: Record<string, Pass[]> = {
     {
       index: 1,
       name: "PREMIUM",
-      price: "₹200",
-      priceValue: 200,
+      price: "₹125",
+      priceValue: 125,
       description:
         "Unlock the full experience of Hikari no Matsuri with our Premium Pass. Exclusive workshops, VIP access, and special merch. For the true Nihon enthusiast!",
       features: [
@@ -847,13 +847,13 @@ const passes: Record<string, Pass[]> = {
     {
       index: 2,
       name: "WORKSHOPS & ADD-ONS",
-      price: "₹300",
-      priceValue: 300,
+      price: "₹200",
+      priceValue: 200,
       description:
         "Enhance your Hikari no Matsuri experience by enrolling in our exclusive workshops. Hands-on learning and cultural immersion from professionals.",
       features: [
         "Includes General + Premium Pass Features + all workshops",
-        "Kendo Workshop",
+        "Kendo Workshop (Day 2 Only)",
         "Origami & Japanese Crafts",
         "Japanese Calligraphy (Shodō)",
         "Participation Certificate(Digital) for Each Workshop",
@@ -889,8 +889,8 @@ const passes: Record<string, Pass[]> = {
     {
       index: 1,
       name: "PREMIUM",
-      price: "₹200",
-      priceValue: 200,
+      price: "₹125",
+      priceValue: 125,
       description:
         "Full access to Day 2 events plus exclusive cultural perks and workshops.",
       features: [
@@ -911,14 +911,14 @@ const passes: Record<string, Pass[]> = {
     {
       index: 2,
       name: "WORKSHOPS & ADD-ONS",
-      price: "₹300",
-      priceValue: 300,
+      price: "₹200",
+      priceValue: 200,
       description:
         "Cultural depth and skill-building through immersive workshops with limited access.",
       features: [
 
         "Includes General + Premium Pass Features + all workshops",
-        "Kendo Workshop",
+        "Kendo Workshop (Day 2 Only)",
         "Origami & Japanese Crafts",
         "Japanese Calligraphy (Shodō)",
         "Participation Certificate(Digital) for Each Workshop",
@@ -956,8 +956,8 @@ const passes: Record<string, Pass[]> = {
     {
       index: 1,
       name: "PREMIUM",
-      price: "₹350",
-      priceValue: 350,
+      price: "₹175",
+      priceValue: 175,
       description:
         "Complete Premium experience for both days with exclusive perks and workshops.",
       features: [
@@ -969,7 +969,7 @@ const passes: Record<string, Pass[]> = {
         "MANGAMIND",
         "VIP Seat Access for Cultural Shows & Performances",
         "SPEECH CONTEST",
-        "Save ₹50 with Combo Pricing!",
+        "Save ₹75 with Combo Pricing!",
       ],
       button: "BUY NOW",
       link: "https://rzp.io/rzp/hnmpremiumcombo",

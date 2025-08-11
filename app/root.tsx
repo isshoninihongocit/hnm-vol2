@@ -11,7 +11,7 @@ import { AuthProvider } from "./context/AuthContext";
 import Navbar from "./components/Navbar";
 import { Toaster } from "sonner";
 import "./tailwind.css";
-
+import { Analytics } from "@vercel/analytics/remix"
 export const links: LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
